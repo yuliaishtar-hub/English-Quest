@@ -1,32 +1,37 @@
 // Next button reliability patch.
-// The lesson buttons are created dynamically by app.js. We keep the app's
-// original click handler and also run that same handler on pointerup.
+// The lesson buttons are created dynamically by app.js.
 (function(){
-  const originalAddEventListener = EventTarget.prototype.addEventListener;
+  const nativeAdd = EventTarget.prototype.addEventListener;
 
   EventTarget.prototype.addEventListener = function(type, listener, options){
-    if(type === "click" && this instanceof HTMLButtonElement &&
-       (this.id === "nextButton" || this.id === "storyNext") &&
-       typeof listener === "function"){
+    const isNextButton = type === "click" &&
+      this instanceof HTMLButtonElement &&
+      (this.id === "nextButton" || this.id === "storyNext") &&
+      typeof listener === "function";
 
-      originalAddEventListener.call(this, type, listener, options);
-
-      let handledByPointer = false;
-
-      originalAddEventListener.call(this, "pointerup", function(event){
-        if(event.button !== 0) return;
-        handledByPointer = true;
-        listener.call(this, event);
-      }, {once:true});
-
-      originalAddEventListener.call(this, "click", function(event){
-        if(handledByPointer){
-          handledByPointer = false;
-          event.stopImmediatePropagation();
-        }
-      }, true);
+    if(!isNextButton){
+      return nativeAdd.call(this, type, listener, options);
     }
 
-    return originalAddEventListener.call(this, type, listener, options);
+    let pointerHandled = false;
+
+    // Capture-phase guard runs before the app's normal click listener.
+    nativeAdd.call(this, "click", function(event){
+      if(pointerHandled){
+        pointerHandled = false;
+        event.preventDefault();
+        event.stopImmediatePropagation();
+      }
+    }, true);
+
+    // Use the exact same app callback on pointerup.
+    nativeAdd.call(this, "pointerup", function(event){
+      if(event.button !== 0) return;
+      pointerHandled = true;
+      listener.call(this, event);
+    });
+
+    // Keep the original app click listener.
+    return nativeAdd.call(this, type, listener, options);
   };
 })();
