@@ -1,4 +1,4 @@
- (cd "$(git rev-parse --show-toplevel)" && printf '%s' 'diff --git a/js/app.js b/js/app.js
+
 index 4e7751be39716d5922d369efad30a4342938e316..212ff653586928e93a14c6aed89f23f6d824c105 100644
 --- a/js/app.js
 +++ b/js/app.js
