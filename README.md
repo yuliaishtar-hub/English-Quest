@@ -1,12 +1,4 @@
- (cd "$(git rev-parse --show-toplevel)" && printf '%s' 'diff --git a/README.md b/README.md
-index c1e49e4e95194fb73150d5f8593dada4ad5ccb67..f7abe50c21e1aa71ca955b4a8f458c21b305d7a5 100644
---- a/README.md
-+++ b/README.md
-@@ -1 +1,29 @@
--# English-Quest
-\ No newline at end of file
-+# English Quest
-+
+
 +Небольшая браузерная игра для повторения тем **Spotlight 3** (3 класс, Быкова,
 +Дули, Поспелова, Эванс). Задания в игре — оригинальные: они тренируют темы и
 +грамматические цели курса, но не копируют страницы учебника или рабочей тетради.
