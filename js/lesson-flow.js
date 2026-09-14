@@ -1,4 +1,3 @@
-const FLOW_VERSION = "spotlight-flow-v1";
 const stages = [
   ["🔤", "Vocabulary"],
   ["🔊", "Listen"],
@@ -14,18 +13,18 @@ const wordTranslations = {
   school:"школа", item:"предмет", pencil:"карандаш", apple:"яблоко", dog:"собака", eraser:"ластик",
   an:"неопределённый артикль перед гласным звуком", a:"неопределённый артикль", what:"что / какой", this:"это / этот",
   number:"число", thirteen:"тринадцать", three:"три", thirty:"тридцать", family:"семья", moments:"моменты",
-  i:"я", have:"иметь", got:"получил / есть", sister:"сестра", has:"имеет", brother:"брат", you:"ты / вы",
+  i:"я", have:"иметь / у меня есть", got:"получил / есть", sister:"сестра", has:"имеет", brother:"брат", you:"ты / вы",
   plural:"множественное число", sisters:"сёстры", likes:"нравится", things:"вещи", like:"нравиться / любить",
   apples:"яблоки", am:"есть / являюсь", don’t:"не", "don't":"не", milk:"молоко", do:"делать / вспомогательный глагол",
   pizza:"пицца", are:"есть / являетесь", toys:"игрушки", come:"приходи / приходить", in:"в / внутри", play:"играть",
-  toys:"игрушки", possession:"принадлежность", box:"коробка", teddy:"плюшевый мишка", bears:"медведи",
-  two:"два", animals:"животные", furry:"пушистый", can:"мочь / уметь", run:"бегать", to:"частица перед глаголом",
+  possession:"принадлежность", box:"коробка", teddy:"плюшевый мишка", bears:"медведи", two:"два",
+  animals:"животные", furry:"пушистый", can:"мочь / уметь", run:"бегать", to:"частица перед глаголом",
   fish:"рыба", can’t:"не может", "can't":"не может", walk:"ходить", ear:"ухо", home:"дом", sweet:"милый / сладкий",
   cat:"кошка", on:"на", chair:"стул", where:"где", "where’s":"где находится", "where's":"где находится", boxes:"коробки",
   day:"день", off:"выходной", he:"он", playing:"играет", park:"парк", doing:"делаешь / делаете", drawing:"рисую",
   daybyday:"день за днём", get:"получать / вставать", up:"вверх", at:"в / в указанное время", seven:"семь", time:"время",
-  it:"это", daily:"ежедневный", action:"действие", brush:"чистить", teeth:"зубы", "now":"сейчас", know:"знать",
-  little:"маленький", room:"комната", fish:"рыба", kitchen:"кухня", table:"стол", monday:"понедельник",
+  it:"это", daily:"ежедневный", action:"действие", brush:"чистить", teeth:"зубы", now:"сейчас", know:"знать",
+  little:"маленький", room:"комната", kitchen:"кухня", table:"стол", monday:"понедельник",
   "betsy’s":"Бетси", "betsy's":"Бетси", "it’s":"это", "it's":"это", "he’s":"он", "he's":"он"
 };
 
@@ -33,14 +32,58 @@ function escapeHtml(text){
   return String(text).replace(/[&<>\"]/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[ch]));
 }
 
+// Делим текст на слова и делаем КАЖДОЕ известное слово интерактивным.
+// Перевод показывается при наведении и по нажатию — удобно и для компьютера, и для планшета.
 function translatedText(text){
   const safe = escapeHtml(text);
   return safe.replace(/[A-Za-z]+(?:[’'][A-Za-z]+)?/g, word => {
     const key = word.toLowerCase();
     const translation = wordTranslations[key];
-    if(!translation) return word;
-    return `<span class="translate-word" data-translation="${escapeHtml(translation)}">${word}</span>`;
+    if(!translation) return `<span class="translate-word translate-unknown">${word}</span>`;
+    return `<span class="translate-word" tabindex="0" data-translation="${escapeHtml(translation)}" title="${escapeHtml(translation)}">${word}</span>`;
   });
+}
+
+function installTranslationHelp(){
+  if(window.__translationHelpInstalled) return;
+  window.__translationHelpInstalled = true;
+  const tip = document.createElement("div");
+  tip.id = "translationTip";
+  tip.className = "translation-tip";
+  document.body.appendChild(tip);
+
+  function show(el){
+    const text = el?.dataset?.translation;
+    if(!text) return;
+    tip.textContent = text;
+    tip.classList.add("show");
+    const r = el.getBoundingClientRect();
+    const left = Math.max(8, Math.min(window.innerWidth - tip.offsetWidth - 8, r.left + r.width/2 - tip.offsetWidth/2));
+    tip.style.left = `${left}px`;
+    tip.style.top = `${Math.max(8, r.top - tip.offsetHeight - 8)}px`;
+  }
+  function hide(){ tip.classList.remove("show"); }
+
+  document.addEventListener("mouseover", e => {
+    const el = e.target.closest?.(".translate-word[data-translation]");
+    if(el) show(el);
+  });
+  document.addEventListener("mouseout", e => {
+    const el = e.target.closest?.(".translate-word[data-translation]");
+    if(el && !el.contains(e.relatedTarget)) hide();
+  });
+  document.addEventListener("focusin", e => {
+    const el = e.target.closest?.(".translate-word[data-translation]");
+    if(el) show(el);
+  });
+  document.addEventListener("focusout", e => {
+    if(e.target.closest?.(".translate-word[data-translation]")) hide();
+  });
+  document.addEventListener("click", e => {
+    const el = e.target.closest?.(".translate-word[data-translation]");
+    if(el) show(el);
+  });
+  window.addEventListener("scroll", hide, {passive:true});
 }
 
 const checks = {
@@ -95,7 +138,6 @@ let currentFlowKey = "";
 let finalMode = false;
 let finalScore = 0;
 let finalIndex = 0;
-let finalStartedAt = 0;
 
 function keyFromTitle(){
   const title = (document.getElementById("lessonTitle")?.textContent || "").toLowerCase();
@@ -111,7 +153,7 @@ function updateStageBar(counterText){
   const m = String(counterText).match(/(\d+)\s*\/\s*(\d+)/);
   if(!m || finalMode) return;
   const n = Number(m[1]);
-  let stageIndex = Math.min(stages.length - 1, n - 1);
+  const stageIndex = Math.min(stages.length - 1, n - 1);
   const labels = document.getElementById("lessonStageBar");
   if(!labels) return;
   labels.innerHTML = stages.map((s,i)=>`<span class="flow-step ${i===stageIndex?"active":""} ${i<stageIndex?"done":""}"><b>${s[0]}</b>${s[1]}</span>`).join("");
@@ -136,10 +178,10 @@ function showFinalCheck(){
   finalMode = true;
   finalScore = 0;
   finalIndex = 0;
-  finalStartedAt = Date.now();
   document.getElementById("progressBar").style.width = "100%";
   document.getElementById("lessonCounter").textContent = "Now I Know · 1 / 3";
-  document.getElementById("lessonStageBar").innerHTML = `<span class="flow-step done"><b>🔤</b>Vocabulary</span><span class="flow-step done"><b>🔊</b>Listen</span><span class="flow-step done"><b>📖</b>Read</span><span class="flow-step done"><b>🧩</b>Grammar</span><span class="flow-step done"><b>💬</b>Speak</span><span class="flow-step done"><b>🗺️</b>Quest</span><span class="flow-step active"><b>🏆</b>Now I Know</span>`;
+  const bar = document.getElementById("lessonStageBar");
+  if(bar) bar.innerHTML = `<span class="flow-step done"><b>🔤</b>Vocabulary</span><span class="flow-step done"><b>🔊</b>Listen</span><span class="flow-step done"><b>📖</b>Read</span><span class="flow-step done"><b>🧩</b>Grammar</span><span class="flow-step done"><b>💬</b>Speak</span><span class="flow-step done"><b>🗺️</b>Quest</span><span class="flow-step active"><b>🏆</b>Now I Know</span>`;
   renderFinalQuestion();
 }
 
@@ -206,14 +248,14 @@ function finishFinalCheck(){
 }
 
 function flowObserver(){
+  installTranslationHelp();
   const counter=document.getElementById("lessonCounter");
   if(!counter) return;
   const obs=new MutationObserver(()=>{
     if(finalMode) return;
-    const text=counter.textContent||"";
     currentFlowKey=keyFromTitle();
     ensureStageBar();
-    updateStageBar(text);
+    updateStageBar(counter.textContent||"");
   });
   obs.observe(counter,{childList:true,characterData:true,subtree:true});
   const screenObs=new MutationObserver(()=>{
@@ -221,6 +263,7 @@ function flowObserver(){
     if(active){
       currentFlowKey=keyFromTitle();
       finalMode=false;
+      installTranslationHelp();
       setTimeout(ensureStageBar,20);
     }
   });
@@ -228,19 +271,41 @@ function flowObserver(){
   if(screen) screenObs.observe(screen,{attributes:true,attributeFilter:["class"]});
 }
 
-document.addEventListener("click",(event)=>{
-  if(event.target?.id!=="nextButton" || finalMode) return;
-  const counter=document.getElementById("lessonCounter")?.textContent||"";
-  const m=counter.match(/(\d+)\s*\/\s*(\d+)/);
-  if(m && m[1]===m[2]){
-    event.preventDefault();
-    event.stopImmediatePropagation();
-    showFinalCheck();
-  }
-},true);
+// Back: всегда возвращает на карту. Не зависит от типа текущего задания.
+function installBackButton(){
+  const card = document.querySelector(".lesson-card");
+  if(!card || document.getElementById("lessonBackButton")) return;
+  const b = document.createElement("button");
+  b.id = "lessonBackButton";
+  b.type = "button";
+  b.className = "lesson-back-button";
+  b.textContent = "← Back";
+  b.addEventListener("click", () => {
+    finalMode = false;
+    document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+    document.getElementById("mapScreen")?.classList.add("active");
+    window.scrollTo(0,0);
+  });
+  card.insertBefore(b, card.firstChild);
+}
+
+function installNextFix(){
+  if(window.__nextFixInstalled) return;
+  window.__nextFixInstalled = true;
+  document.addEventListener("click", event=>{
+    if(event.target?.id !== "nextButton" || finalMode) return;
+    const counter = document.getElementById("lessonCounter")?.textContent || "";
+    const m = counter.match(/(\d+)\s*\/\s*(\d+)/);
+    if(m && Number(m[1]) >= Number(m[2])){
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      showFinalCheck();
+    }
+  }, true);
+}
 
 document.addEventListener("DOMContentLoaded",()=>{
-  currentFlowKey=keyFromTitle();
   flowObserver();
-  setTimeout(ensureStageBar,100);
+  installBackButton();
+  installNextFix();
 });
