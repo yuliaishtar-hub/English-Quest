@@ -8,6 +8,41 @@ const stages = [
   ["🗺️", "Quest"]
 ];
 
+const wordTranslations = {
+  choose:"выбери", the:"этот / эта / это", colour:"цвет", color:"цвет", blue:"синий / голубой", circle:"круг", ten:"десять",
+  correct:"правильный", sentence:"предложение", my:"мой / моя", name:"имя", is:"есть / является", lily:"Лили",
+  school:"школа", item:"предмет", pencil:"карандаш", apple:"яблоко", dog:"собака", eraser:"ластик",
+  an:"неопределённый артикль перед гласным звуком", a:"неопределённый артикль", what:"что / какой", this:"это / этот",
+  number:"число", thirteen:"тринадцать", three:"три", thirty:"тридцать", family:"семья", moments:"моменты",
+  i:"я", have:"иметь", got:"получил / есть", sister:"сестра", has:"имеет", brother:"брат", you:"ты / вы",
+  plural:"множественное число", sisters:"сёстры", likes:"нравится", things:"вещи", like:"нравиться / любить",
+  apples:"яблоки", am:"есть / являюсь", don’t:"не", "don't":"не", milk:"молоко", do:"делать / вспомогательный глагол",
+  pizza:"пицца", are:"есть / являетесь", toys:"игрушки", come:"приходи / приходить", in:"в / внутри", play:"играть",
+  toys:"игрушки", possession:"принадлежность", box:"коробка", teddy:"плюшевый мишка", bears:"медведи",
+  two:"два", animals:"животные", furry:"пушистый", can:"мочь / уметь", run:"бегать", to:"частица перед глаголом",
+  fish:"рыба", can’t:"не может", "can't":"не может", walk:"ходить", ear:"ухо", home:"дом", sweet:"милый / сладкий",
+  cat:"кошка", on:"на", chair:"стул", where:"где", "where’s":"где находится", "where's":"где находится", boxes:"коробки",
+  day:"день", off:"выходной", he:"он", playing:"играет", park:"парк", doing:"делаешь / делаете", drawing:"рисую",
+  daybyday:"день за днём", get:"получать / вставать", up:"вверх", at:"в / в указанное время", seven:"семь", time:"время",
+  it:"это", daily:"ежедневный", action:"действие", brush:"чистить", teeth:"зубы", "now":"сейчас", know:"знать",
+  little:"маленький", room:"комната", fish:"рыба", kitchen:"кухня", table:"стол", monday:"понедельник",
+  "betsy’s":"Бетси", "betsy's":"Бетси", "it’s":"это", "it's":"это", "he’s":"он", "he's":"он"
+};
+
+function escapeHtml(text){
+  return String(text).replace(/[&<>\"]/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[ch]));
+}
+
+function translatedText(text){
+  const safe = escapeHtml(text);
+  return safe.replace(/[A-Za-z]+(?:[’'][A-Za-z]+)?/g, word => {
+    const key = word.toLowerCase();
+    const translation = wordTranslations[key];
+    if(!translation) return word;
+    return `<span class="translate-word" data-translation="${escapeHtml(translation)}">${word}</span>`;
+  });
+}
+
 const checks = {
   starter: [
     ["Choose the colour.", ["blue", "circle", "ten"], 0],
@@ -112,11 +147,11 @@ function renderFinalQuestion(){
   const list = checks[currentFlowKey] || checks.starter;
   const item = list[finalIndex];
   const box = document.getElementById("lessonContent");
-  box.innerHTML = `<div class="final-badge">🏆 NOW I KNOW</div><div class="lesson-kind">МИНИ-ПРОВЕРКА · ${finalIndex+1} / ${list.length}</div><div class="question">${item[0]}</div><div id="finalAnswers" class="answer-grid"></div><div id="finalFeedback" class="feedback"></div>`;
+  box.innerHTML = `<div class="final-badge">🏆 NOW I KNOW</div><div class="lesson-kind">МИНИ-ПРОВЕРКА · ${finalIndex+1} / ${list.length}</div><div class="question">${translatedText(item[0])}</div><div id="finalAnswers" class="answer-grid"></div><div id="finalFeedback" class="feedback"></div>`;
   const answers = document.getElementById("finalAnswers");
   item[1].forEach((text,i)=>{
     const b=document.createElement("button");
-    b.type="button"; b.className="answer-button"; b.textContent=text;
+    b.type="button"; b.className="answer-button"; b.innerHTML=translatedText(text);
     b.addEventListener("click",()=>answerFinal(i,b));
     answers.appendChild(b);
   });
