@@ -1,427 +1,194 @@
- (cd "$(git rev-parse --show-toplevel)" && printf '%s' 'diff --git a/js/app.js b/js/app.js
-index 4e7751be39716d5922d369efad30a4342938e316..6da524e6b4ae647514e9e57bc3be21073e7c6951 100644
---- a/js/app.js
-+++ b/js/app.js
-@@ -1,360 +1,76 @@
- const IMG = "https://yuliaishtar-hub.github.io/inglish-adventure/";
- 
- const zones = [
--  {key:"family",icon:"👨‍👩‍👧",title:"Family House",sub:"Family & people",image:IMG+"mum dad.jpg"},
--  {key:"school",icon:"🏫",title:"School",sub:"School things & actions",image:IMG+"School bag.jpg"},
--  {key:"animals",icon:"🐾",title:"Pet World",sub:"Animals & speaking",image:IMG+"monkey.jpg"},
--  {key:"colours",icon:"🎨",title:"Colour Castle",sub:"Colours",image:null},
--  {key:"food",icon:"🍕",title:"Yummy Café",sub:"Food & drinks",image:IMG+"Pizza.jpg"},
--  {key:"seasons",icon:"🌦️",title:"Weather Park",sub:"Seasons",image:null},
--  {key:"toys",icon:"🧸",title:"Toy Town",sub:"Toys",image:null},
--  {key:"home",icon:"🏡",title:"My Home",sub:"Rooms & things",image:IMG+"bedroom.jpg"},
--  {key:"boss",icon:"👑",title:"Boss Castle",sub:"Big conversation",image:IMG+"Lili green.jpg"}
-+  {key:"starter", icon:"🌈", title:"Starter Unit · Welcome back!", sub:"Числа, цвета, формы и школьные вещи"},
-+  {key:"school", icon:"🏫", title:"Module 1 · School Days", sub:"Школа, предметы, to be и команды", image:IMG+"School bag.jpg"},
-+  {key:"family", icon:"🏠", title:"Module 2 · Family Moments", sub:"Семья, have got, possessive adjectives", image:IMG+"mummy.jpg"},
-+  {key:"likes", icon:"🍎", title:"Module 3 · All the Things I Like", sub:"Еда, likes / dislikes, some / any"},
-+  {key:"toys", icon:"🧸", title:"Module 4 · Come in and Play!", sub:"Игрушки, комнаты, мебель, this / that"}
- ];
--
--const q = (question,image,options,correctIndex) => ({question,image,options,correctIndex});
-+const q = (question,image,options,correctIndex,tip="") => ({type:"choice",question,image,options,correctIndex,tip});
-+const build = (question,words,answer,tip="") => ({type:"build",question,words,answer,tip});
- 
- const levels = {
--  family:{name:"👨‍👩‍👧 Family House",type:"story",scenes:[
--    {text:"Hello! I'\''m Lily!",image:IMG+"Lili.jpg"},
--    {text:"I have a mummy. Her name is Anna.",image:IMG+"mummy.jpg"},
--    {text:"I have a daddy. His name is Tom.",image:IMG+"daddy.jpg"},
--    {text:"I have a grandma and a grandpa.",image:IMG+"grandmagrandpa.jpg"},
--    {text:"I have a sister. Her name is Mia.",image:IMG+"Lilissisterbig.jpg"},
--    {text:"I love my family!",image:IMG+"Lili.jpg"},
--    {text:"I go to school every day!",image:IMG+"Lili.jpg"},
--    {text:"Let'\''s play together!",image:IMG+"Lili.jpg"}
--  ]},
--  school:{name:"🏫 School",questions:[
--    q("What is it?",IMG+"pen.jpg",["It'\''s a pen.","It'\''s a ruler.","It'\''s an eraser."],0),
--    q("What is it?",IMG+"pencil.jpg",["It'\''s a pencil.","It'\''s a ruler.","It'\''s a pen."],0),
--    q("What is it?",IMG+"ruler.jpg",["It'\''s a pencil.","It'\''s a ruler.","It'\''s a pen."],1),
--    q("What is it?",IMG+"Eraser.jpg",["It'\''s a ruler.","It'\''s a pen.","It'\''s an eraser."],2),
--    q("What is it?",IMG+"School bag.jpg",["It'\''s a school bag.","It'\''s a pen.","It'\''s a ruler."],0),
--    q("What is it?",IMG+"book.jpg",["It'\''s a book.","It'\''s a pencil case.","It'\''s a school bag."],0),
--    q("What is it?",IMG+"pencil case.jpg",["It'\''s a ruler.","It'\''s a pencil case.","It'\''s a book."],1)
--  ]},
--  animals:{name:"🐾 Pet World",questions:[
--    q("What is it?",IMG+"monkey.jpg",["It'\''s a chimp.","It'\''s a fish.","It'\''s a bird."],0),
--    q("What is it?",IMG+"fish.jpg",["It'\''s a mouse.","It'\''s a frog.","It'\''s a fish."],2),
--    q("What is it?",IMG+"bird.jpg",["It'\''s a bird.","It'\''s a chimp.","It'\''s a mouse."],0),
--    q("What is it?",IMG+"mouse.jpg",["It'\''s a fish.","It'\''s a mouse.","It'\''s a frog."],1),
--    q("What is it?",IMG+"frog.jpg",["It'\''s a frog.","It'\''s a bird.","It'\''s a chimp."],0)
--  ]},
--  colours:{name:"🎨 Colour Castle",questions:[
--    q("What colour is it?","🔴",["It'\''s red.","It'\''s blue.","It'\''s white."],0),
--    q("What colour is it?","🔵",["It'\''s yellow.","It'\''s black.","It'\''s blue."],2),
--    q("What colour is it?","🟡",["It'\''s yellow.","It'\''s brown.","It'\''s orange."],0),
--    q("What colour is it?","⚫",["It'\''s white.","It'\''s black.","It'\''s red."],1),
--    q("What colour is it?","🟢",["It'\''s green.","It'\''s yellow.","It'\''s red."],0),
--    q("What colour is it?","⚪",["It'\''s white.","It'\''s blue.","It'\''s black."],0),
--    q("What colour is it?","🟤",["It'\''s brown.","It'\''s pink.","It'\''s red."],0),
--    q("What colour is it?","🌸",["It'\''s pink.","It'\''s green.","It'\''s blue."],0)
-+  starter:{name:"🌈 Starter Unit · Welcome back!",questions:[
-+    q("What colour is it?","🔵",["It'\''s blue.","It'\''s a circle.","It'\''s ten."],0,"Повтори: It'\''s blue."),
-+    q("How many stars can you see?","⭐⭐⭐⭐⭐",["Five.","Fifteen.","Twenty."],0,"Сосчитай: one, two, three, four, five."),
-+    build("Собери команду учителя.",["your","Open","book!"],"Open your book!","Open — первое слово команды."),
-+    q("Choose a school item.","✏️",["a pencil","a sandwich","a dog"],0,"Прочитай: pencil."),
-+    build("Собери: «Меня зовут Лили».",["name","My","Lily.","is"],"My name is Lily.","My name is… = Меня зовут…")
-   ]},
--  food:{name:"🍕 Yummy Café",questions:[
--    q("What is it?",IMG+"Apple.jpg",["It'\''s an apple.","It'\''s a pizza.","It'\''s a burger."],0),
--    q("What is it?",IMG+"Burger.jpg",["It'\''s an apple.","It'\''s a burger.","It'\''s a sandwich."],1),
--    q("What is it?",IMG+"Chips.jpg",["It'\''s a pizza.","It'\''s a burger.","It'\''s chips."],2),
--    q("What is it?",IMG+"Chocolate cake.jpg",["It'\''s a chocolate cake.","It'\''s an apple.","It'\''s ice cream."],0),
--    q("What is it?",IMG+"Ice cream.jpg",["It'\''s a burger.","It'\''s ice cream.","It'\''s a sandwich."],1),
--    q("What is it?",IMG+"Milk.jpg",["It'\''s milk.","It'\''s pizza.","It'\''s chips."],0),
--    q("What is it?",IMG+"Orange juice.jpg",["It'\''s orange juice.","It'\''s milk.","It'\''s water."],0),
--    q("What is it?",IMG+"Pizza.jpg",["It'\''s pizza.","It'\''s an apple.","It'\''s a burger."],0),
--    q("What is it?",IMG+"Sandwich.jpg",["It'\''s a sandwich.","It'\''s an apple.","It'\''s chips."],0)
-+  school:{name:"🏫 Module 1 · School Days", questions:[
-+    q("Listen and choose. What is it?",IMG+"School bag.jpg",["It'\''s a school bag.","It'\''s a pencil.","It'\''s a ruler."],0,"Скажи: It'\''s a school bag."),
-+    q("What is it?",IMG+"pen.jpg",["It'\''s a pen.","It'\''s an eraser.","It'\''s a book."],0,"Вопрос: What'\''s this? — It'\''s a pen."),
-+    build("Собери предложение: «Это карандаш».",["a","It'\''s","pencil","ruler"],"It'\''s a pencil.","Начинай с It'\''s."),
-+    q("What is it?",IMG+"book.jpg",["It'\''s a pencil case.","It'\''s a book.","It'\''s a school bag."],1,"Прочитай слово book."),
-+    build("Собери вопрос: «Что это?»",["this?","What'\''s","It","a"],"What'\''s this?","Вопросительное слово стоит в начале."),
-+    q("What is it?",IMG+"Eraser.jpg",["It'\''s a ruler.","It'\''s an eraser.","It'\''s a pen."],1,"Повтори: an eraser."),
-+    build("Собери ответ.",["ruler.","a","It'\''s","What'\''s"],"It'\''s a ruler.","Артикль a идёт перед ruler.")
-   ]},
--  seasons:{name:"🌦️ Weather Park",questions:[
--    q("What season is it?","❄️",["It'\''s winter.","It'\''s summer.","It'\''s spring."],0),
--    q("What season is it?","🌸",["It'\''s autumn.","It'\''s spring.","It'\''s winter."],1),
--    q("What season is it?","☀️",["It'\''s winter.","It'\''s spring.","It'\''s summer."],2),
--    q("What season is it?","🍂",["It'\''s autumn.","It'\''s winter.","It'\''s summer."],0)
-+  family:{name:"🏠 Module 2 · Family Moments", questions:[
-+    q("Who is she?",IMG+"mummy.jpg",["She'\''s my mummy.","She'\''s my sister.","She'\''s my grandma."],0,"She'\''s = She is."),
-+    q("Who is he?",IMG+"daddy.jpg",["He'\''s my grandpa.","He'\''s my daddy.","He'\''s my brother."],1,"He'\''s = He is."),
-+    build("Собери: «У меня есть сестра».",["a","have","sister.","I","got"],"I have got a sister.","I have got = у меня есть."),
-+    q("Who is she?",IMG+"grandmagrandpa.jpg",["She'\''s my grandma.","She'\''s my mummy.","She'\''s my sister."],0,"Прочитай: grandma."),
-+    build("Собери вопрос о брате.",["got","a","brother?","Have","you"],"Have you got a brother?","В вопросе Have стоит первым."),
-+    build("Собери короткий ответ.",["have.","Yes,","I","got"],"Yes, I have.","После Yes ставим запятую."),
-+    q("Выбери фразу про семью.","👨‍👩‍👧",["I have got a family.","It'\''s a school bag.","What'\''s this?"],0,"Повтори фразу целиком.")
-   ]},
--  toys:{name:"🧸 Toy Town",questions:[
--    q("What is it?","🧸",["It'\''s a teddy bear.","It'\''s a doll.","It'\''s a ball."],0),
--    q("What is it?","🪀",["It'\''s a yoyo.","It'\''s a puppet.","It'\''s a toy soldier."],0),
--    q("What is it?","⚽",["It'\''s a ball.","It'\''s a teddy bear.","It'\''s a doll."],0),
--    q("What is it?","🪆",["It'\''s a puppet.","It'\''s a yoyo.","It'\''s a ball."],0)
-+  likes:{name:"🍎 Module 3 · All the Things I Like",questions:[
-+    q("What do you like?","🍎",["I like apples.","I am apples.","I have apples."],0,"Повтори: I like apples."),
-+    q("Choose the food.","🍦",["ice cream","a kite","a ruler"],0,"Прочитай: ice cream."),
-+    build("Собери: «Я не люблю молоко».",["don'\''t","milk.","I","like"],"I don'\''t like milk.","После I поставь don'\''t."),
-+    build("Собери вопрос о еде.",["got","Have","any","you","juice?"],"Have you got any juice?","В вопросах используй any.")
-   ]},
--  home:{name:"🏡 My Home",questions:[
--    q("What is it?","🪑",["It'\''s a chair.","It'\''s a table.","It'\''s a shelf."],0),
--    q("What room is it?",IMG+"bedroom.jpg",["It'\''s a kitchen.","It'\''s a bedroom.","It'\''s a bathroom."],1),
--    q("What room is it?",IMG+"kitchen.jpg",["It'\''s a kitchen.","It'\''s a living room.","It'\''s a bedroom."],0),
--    q("What room is it?",IMG+"bathroom.jpg",["It'\''s a bedroom.","It'\''s a bathroom.","It'\''s a kitchen."],1)
--  ]},
--  boss:{name:"👑 Boss Castle",questions:[
--    q("Who is she?",IMG+"mummy.jpg",["She'\''s my mummy.","She'\''s my sister.","She'\''s my grandma."],0),
--    q("Who is he?",IMG+"daddy.jpg",["He'\''s my brother.","He'\''s my daddy.","He'\''s my grandpa."],1),
--    q("What is it?",IMG+"Apple.jpg",["It'\''s an apple.","It'\''s a pizza.","It'\''s a burger."],0),
--    q("What is it?",IMG+"School bag.jpg",["It'\''s a school bag.","It'\''s a pen.","It'\''s a ruler."],0)
-+  toys:{name:"🧸 Module 4 · Come in and Play!",questions:[
-+    q("What is it?","🪆",["It'\''s a doll.","It'\''s a ball.","It'\''s a robot."],0,"Скажи: It'\''s a doll."),
-+    q("Where is the ball?","⚽📦",["It'\''s in the box.","It'\''s on Monday.","It'\''s a box."],0,"in the box = в коробке."),
-+    q("Choose the correct phrase.","🪑",["This is a chair.","This are a chair.","These is a chair."],0,"This — один предмет рядом."),
-+    build("Собери: «Это комната Бетси».",["is","room.","This","Betsy'\''s"],"This is Betsy'\''s room.","Betsy'\''s = Бетси."),
-+    build("Собери: «У меня есть робот».",["a","robot.","have","I","got"],"I have got a robot.","I have got = у меня есть.")
-   ]}
- };
- 
--let state = loadState();
--let currentKey = "";
--let currentIndex = 0;
--let answered = false;
--let storyMode = false;
--let lilyVoice = null;
--let levelStartXP = 0;
--let levelStartGems = 0;
--
--function loadState(){
--  try{
--    const saved = JSON.parse(localStorage.getItem("english_quest_v2") || "null");
--    if(saved && typeof saved === "object") return saved;
--  }catch(e){}
--  return {xp:0,gems:0,completed:[],unlocked:["family"]};
--}
--
--function save(){
--  localStorage.setItem("english_quest_v2",JSON.stringify(state));
--  updateStats();
--}
--
--function updateStats(){
--  ["playerXP","mapXP","lessonXP"].forEach(id=>{
--    const el=document.getElementById(id); if(el) el.textContent=state.xp;
--  });
--  ["playerGems","mapGems","lessonGems"].forEach(id=>{
--    const el=document.getElementById(id); if(el) el.textContent=state.gems;
--  });
--}
--
--function show(id){
--  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
--  const target=document.getElementById(id);
--  if(target) target.classList.add("active");
--  window.scrollTo(0,0);
--}
--
--function goHome(){show("homeScreen");updateStats();}
--function showMap(){renderMap();updateStats();show("mapScreen");}
--
--function renderMap(){
--  const grid=document.getElementById("worldMap");
--  if(!grid) return;
--  grid.innerHTML="";
--  zones.forEach((z,i)=>{
--    const unlocked=state.unlocked.includes(z.key);
--    const done=state.completed.includes(z.key);
--    const card=document.createElement("button");
--    card.type="button";
--    card.className="world-card-item"+(unlocked?"":" locked");
--    card.innerHTML=`
--      <div class="world-card-top">
--        <div class="world-icon">${z.icon}</div>
--        ${unlocked?"":'\''<div class="lock">🔒</div>'\''}
--      </div>
--      <div class="world-name">${z.title} ${done?"✓":""}</div>
--      <div class="world-description">${z.sub}</div>`;
--    if(unlocked) card.addEventListener("click",()=>startLevel(z.key));
--    grid.appendChild(card);
--  });
--}
--
--function startLevel(key){
--  currentKey=key;
--  currentIndex=0;
--  answered=false;
--  storyMode=levels[key].type==="story";
--  levelStartXP=state.xp;
--  levelStartGems=state.gems;
--  document.getElementById("lessonTitle").textContent=levels[key].name;
--  show("lessonScreen");
--  renderLesson();
--}
--
--function renderLesson(){
--  const data=levels[currentKey];
--  const total=storyMode?data.scenes.length:data.questions.length;
--  document.getElementById("lessonCounter").textContent=`${currentIndex+1} / ${total}`;
--  document.getElementById("progressBar").style.width=((currentIndex/total)*100)+"%";
--  const box=document.getElementById("lessonContent");
--  if(storyMode){renderStory(box,data.scenes[currentIndex]);return;}
--  renderQuestion(box,data.questions[currentIndex]);
--}
--
--function renderQuestion(box,item){
--  answered=false;
--  const image=typeof item.image==="string" && item.image.startsWith("http")
--    ? `<img class="big-image" src="${item.image}" alt="Learning picture">`
--    : `<div class="big-image emoji-image">${item.image}</div>`;
--  box.innerHTML=`
--    ${image}
--    <div class="question">${item.question}</div>
--    <button id="listenQuestion" class="listen-button" type="button">🔊 Listen</button>
--    <div id="answers" class="answer-grid"></div>
--    <div id="feedback" class="feedback"></div>
--    <div class="lesson-actions">
--      <button id="speakButton" class="speak-button" type="button" style="display:none">🎤 Say it!</button>
--      <button id="nextButton" class="next-button" type="button" style="display:none">Next ➡️</button>
--    </div>`;
--
--  document.getElementById("listenQuestion").addEventListener("click",()=>speak(item.question));
--  document.getElementById("speakButton").addEventListener("click",listenAnswer);
--  document.getElementById("nextButton").addEventListener("click",nextItem);
--
--  const answers=document.getElementById("answers");
--  item.options.forEach((text,i)=>{
--    const btn=document.createElement("button");
--    btn.type="button";
--    btn.className="answer-button";
--    btn.textContent=text;
--    btn.addEventListener("click",()=>selectAnswer(i,btn));
--    answers.appendChild(btn);
--  });
--}
--
--function renderStory(box,scene){
--  box.innerHTML=`
--    <div class="story">
--      <img src="${scene.image}" alt="Lily story">
--      <div>
--        <div class="story-step">LILY'\''S STORY • SCENE ${currentIndex+1}</div>
--        <div class="story-text">${scene.text}</div>
--        <div class="lesson-actions">
--          <button id="storyListen" class="listen-button" type="button">🔊 Listen</button>
--          <button id="storyNext" class="next-button" type="button">${currentIndex===levels[currentKey].scenes.length-1?"Finish story":"Next ➡️"}</button>
--        </div>
--      </div>
--    </div>`;
--  document.getElementById("storyListen").addEventListener("click",()=>speak(scene.text,true));
--  document.getElementById("storyNext").addEventListener("click",nextItem);
--}
--
--function selectAnswer(index,btn){
--  if(answered) return;
--  const item=levels[currentKey].questions[currentIndex];
--  if(index===item.correctIndex){
--    answered=true;
--    btn.classList.add("correct");
--    document.querySelectorAll(".answer-button").forEach(b=>b.disabled=true);
--    state.xp+=10;
--    state.gems+=1;
--    save();
--    const feedback=document.getElementById("feedback");
--    feedback.textContent="Great! Now say it aloud! +10 XP ⭐";
--    feedback.className="feedback success";
--    document.getElementById("speakButton").style.display="inline-block";
--    document.getElementById("nextButton").style.display="inline-block";
--    speak(item.options[item.correctIndex],true);
--  }else{
--    btn.classList.add("wrong");
--    btn.disabled=true;
--    const feedback=document.getElementById("feedback");
--    feedback.textContent="Oops! Try again!";
--    feedback.className="feedback error";
--    speak(item.options[item.correctIndex],true);
--  }
--}
--
--function nextItem(){
--  const total=storyMode?levels[currentKey].scenes.length:levels[currentKey].questions.length;
--  currentIndex++;
--  if(currentIndex>=total){finishLevel();return;}
--  renderLesson();
--}
--
--function finishLevel(){
--  if(!state.completed.includes(currentKey)) state.completed.push(currentKey);
--  const pos=zones.findIndex(z=>z.key===currentKey);
--  const next=zones[pos+1];
--  if(next && !state.unlocked.includes(next.key)) state.unlocked.push(next.key);
--  save();
--  const earnedXP=state.xp-levelStartXP;
--  const earnedGems=state.gems-levelStartGems;
--  document.getElementById("rewardTitle").textContent=levels[currentKey].name+" complete!";
--  document.getElementById("rewardText").textContent=next
--    ? `Amazing! You earned ${earnedXP} XP and ${earnedGems} gem${earnedGems===1?"":"s"}. 🔓 ${next.title} is now unlocked!`
--    : `Amazing! You earned ${earnedXP} XP and ${earnedGems} gems. You reached the end of this adventure!`;
--  document.getElementById("rewardXP").textContent=`+${earnedXP} XP`;
--  document.getElementById("rewardGems").textContent=`+${earnedGems}`;
--  show("rewardScreen");
--  speak("Well done!",true);
--}
--
--function speak(text,slow=false){
--  if(!("speechSynthesis" in window)) return;
--  speechSynthesis.cancel();
--  const u=new SpeechSynthesisUtterance(text);
--  u.lang="en-US";
--  u.rate=slow?0.76:0.9;
--  u.pitch=1.08;
--  if(lilyVoice) u.voice=lilyVoice;
--  speechSynthesis.speak(u);
--}
--
--function setupVoice(){
--  if(!("speechSynthesis" in window)) return;
--  const choose=()=>{
--    const voices=speechSynthesis.getVoices();
--    lilyVoice=voices.find(v=>/Google US English|Microsoft Zira|Samantha|Female/i.test(v.name) && /^en-US/i.test(v.lang))
--      || voices.find(v=>/^en-US/i.test(v.lang))
--      || voices.find(v=>/^en-GB/i.test(v.lang))
--      || voices[0]
--      || null;
--  };
--  choose();
--  speechSynthesis.onvoiceschanged=choose;
--}
--
--function listenAnswer(){
--  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
--  if(!SR){
--    const feedback=document.getElementById("feedback");
--    feedback.textContent="Speech recognition is not available here. Use Listen and repeat aloud.";
--    feedback.className="feedback info";
--    return;
--  }
--  const item=levels[currentKey].questions[currentIndex];
--  const mic=document.getElementById("speakButton");
--  mic.textContent="🎤 Listening...";
--  const r=new SR();
--  r.lang="en-US";
--  r.interimResults=false;
--  r.maxAlternatives=3;
--  r.onresult=e=>{
--    const heard=normalize(e.results[0][0].transcript);
--    const correct=normalize(item.options[item.correctIndex]);
--    const words=correct.split(/\s+/).filter(w=>w.length>2);
--    const hits=words.filter(w=>heard.includes(w)).length;
--    mic.textContent="🎤 Say it!";
--    const feedback=document.getElementById("feedback");
--    if(heard===correct || heard.includes(correct) || hits>=Math.max(1,Math.ceil(words.length*.65))){
--      feedback.textContent="Excellent speaking! 🎉";
--      feedback.className="feedback success";
--    }else{
--      feedback.textContent="Good try! Listen once more and repeat.";
--      feedback.className="feedback info";
--      speak(item.options[item.correctIndex],true);
--    }
--  };
--  r.onerror=()=>{mic.textContent="🎤 Say it!";};
--  try{r.start();}catch(e){mic.textContent="🎤 Say it!";}
--}
--
-+let state=loadState(), currentKey="", currentIndex=0, answered=false, levelStartXP=0, levelStartGems=0, lilyVoice=null;
-+function loadState(){try{const v=JSON.parse(localStorage.getItem("english_quest_v3")||"null");if(v&&typeof v==="object")return {...{xp:0,gems:0,completed:[],unlocked:zones.map(z=>z.key)},...v,unlocked:zones.map(z=>z.key)};}catch(e){}return {xp:0,gems:0,completed:[],unlocked:zones.map(z=>z.key)};}
-+function save(){localStorage.setItem("english_quest_v3",JSON.stringify(state));updateStats();}
-+function updateStats(){["playerXP","mapXP","lessonXP"].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=state.xp});["playerGems","mapGems","lessonGems"].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=state.gems});}
-+function show(id){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));document.getElementById(id)?.classList.add("active");window.scrollTo(0,0);}
-+function goHome(){show("homeScreen");updateStats();} function showMap(){renderMap();updateStats();show("mapScreen");}
-+function renderMap(){const grid=document.getElementById("worldMap");grid.innerHTML="";zones.forEach(z=>{const unlocked=!z.locked&&state.unlocked.includes(z.key),done=state.completed.includes(z.key),card=document.createElement("button");card.type="button";card.className="world-card-item"+(unlocked?"":" locked");card.innerHTML=`<div class="world-card-top"><div class="world-icon">${z.icon}</div>${unlocked?`<span class="chapter-pill">${done?"✓ Пройдено":"Играть"}</span>`:'\''<div class="lock">🔒</div>'\''}</div><div class="world-name">${z.title}</div><div class="world-description">${z.sub}</div>`;if(unlocked)card.addEventListener("click",()=>startLevel(z.key));grid.appendChild(card);});}
-+function startLevel(key){currentKey=key;currentIndex=0;levelStartXP=state.xp;levelStartGems=state.gems;document.getElementById("lessonTitle").textContent=levels[key].name;show("lessonScreen");renderLesson();}
-+function renderLesson(){const data=levels[currentKey],total=data.questions.length;document.getElementById("lessonCounter").textContent=`${currentIndex+1} / ${total}`;document.getElementById("progressBar").style.width=`${(currentIndex/total)*100}%`;const item=data.questions[currentIndex];if(item.type==="build")renderBuilder(item);else renderChoice(item);}
-+function visual(image){return typeof image==="string"&&image.startsWith("http")?`<img class="big-image" src="${image}" alt="Illustration for English word">`:`<div class="big-image emoji-image">${image}</div>`;}
-+function renderChoice(item){answered=false;document.getElementById("lessonContent").innerHTML=`${visual(item.image)}<div class="lesson-kind">СЛОВО И ФРАЗА</div><div class="question">${item.question}</div><button id="listenQuestion" class="listen-button" type="button">🔊 Слушать</button><div id="answers" class="answer-grid"></div><div id="feedback" class="feedback"></div><div class="lesson-actions"><button id="speakButton" class="speak-button" type="button" hidden>🎤 Повторить</button><button id="nextButton" class="next-button" type="button" hidden>Дальше ➜</button></div>`;document.getElementById("listenQuestion").onclick=()=>speak(item.question);document.getElementById("speakButton").onclick=()=>listenAnswer(item.options[item.correctIndex]);document.getElementById("nextButton").onclick=nextItem;const answers=document.getElementById("answers");item.options.forEach((text,i)=>{const b=document.createElement("button");b.className="answer-button";b.textContent=text;b.onclick=()=>selectChoice(i,b,item);answers.appendChild(b);});}
-+function renderBuilder(item){let picked=[];document.getElementById("lessonContent").innerHTML=`<div class="builder-hero">🧩</div><div class="lesson-kind">СОБЕРИ ФРАЗУ</div><div class="question">${item.question}</div><button id="buildListen" class="listen-button" type="button">🔊 Послушать ответ</button><div class="sentence-slot" id="sentenceSlot"><span>Нажимай слова по порядку</span></div><div class="word-bank" id="wordBank"></div><div id="feedback" class="feedback"></div><div class="lesson-actions"><button id="resetSentence" class="secondary-button small-button" type="button">↺ Заново</button><button id="checkSentence" class="next-button" type="button">Проверить ✓</button></div>`;const bank=document.getElementById("wordBank");[...item.words].sort(()=>Math.random()-.5).forEach((word,i)=>{const b=document.createElement("button");b.className="word-tile";b.textContent=word;b.onclick=()=>{picked.push(word);b.disabled=true;updateSlot();};bank.appendChild(b);});function updateSlot(){document.getElementById("sentenceSlot").textContent=picked.join(" ");}document.getElementById("buildListen").onclick=()=>speak(item.answer,true);document.getElementById("resetSentence").onclick=()=>{picked=[];document.querySelectorAll(".word-tile").forEach(b=>b.disabled=false);updateSlot();};document.getElementById("checkSentence").onclick=()=>{if(normalize(picked.join(" "))===normalize(item.answer)){award(item,`Отлично! ${item.answer}`);document.getElementById("checkSentence").hidden=true;}else{feedback("Почти! "+item.tip,"error");speak(item.answer,true);}};}
-+function selectChoice(index,btn,item){if(answered)return;if(index===item.correctIndex){document.querySelectorAll(".answer-button").forEach(b=>b.disabled=true);btn.classList.add("correct");award(item,`Верно! ${item.tip}`);}else{btn.classList.add("wrong");btn.disabled=true;feedback("Попробуй ещё раз. 🔎","error");}}
-+function award(item,message){answered=true;state.xp+=10;state.gems+=1;save();feedback(`${message} +10 XP ⭐`,`success`);document.getElementById("speakButton")?.removeAttribute("hidden");const n=document.getElementById("nextButton");if(n)n.removeAttribute("hidden");if(item.answer)speak(item.answer,true);else speak(item.options[item.correctIndex],true);}
-+function feedback(text,kind){const e=document.getElementById("feedback");e.textContent=text;e.className=`feedback ${kind}`;}
-+function nextItem(){if(++currentIndex>=levels[currentKey].questions.length)return finishLevel();renderLesson();}
-+function finishLevel(){if(!state.completed.includes(currentKey))state.completed.push(currentKey);save();const x=state.xp-levelStartXP,g=state.gems-levelStartGems;document.getElementById("rewardTitle").textContent="Глава пройдена!";document.getElementById("rewardText").textContent=`Ты заработал ${x} XP и ${g} 💎. Самое время повторить фразы вслух!`;document.getElementById("rewardXP").textContent=`+${x} XP`;document.getElementById("rewardGems").textContent=`+${g}`;show("rewardScreen");speak("Well done!",true);}
- function normalize(s){return String(s).toLowerCase().replace(/[.,!?;:]/g,"").replace(/\s+/g," ").trim();}
--
--function showToast(message){
--  const toast=document.getElementById("toast");
--  if(!toast) return;
--  toast.textContent=message;
--  toast.classList.add("show");
--  clearTimeout(showToast.timer);
--  showToast.timer=setTimeout(()=>toast.classList.remove("show"),2200);
--}
--
--function init(){
--  updateStats();
--  setupVoice();
--  document.getElementById("startQuest")?.addEventListener("click",showMap);
--  document.getElementById("gamesBtn")?.addEventListener("click",()=>{
--    showToast("🎮 Games are coming next — the adventure is ready!");
--    speak("Games are coming next!");
--  });
--  document.getElementById("mapHome")?.addEventListener("click",goHome);
--  document.getElementById("lessonBack")?.addEventListener("click",showMap);
--  document.getElementById("rewardMap")?.addEventListener("click",showMap);
--  document.getElementById("rewardHome")?.addEventListener("click",goHome);
--}
--
-+function speak(text,slow=false){if(!("speechSynthesis"in window))return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang="en-US";u.rate=slow?.72:.88;u.pitch=1.08;if(lilyVoice)u.voice=lilyVoice;speechSynthesis.speak(u);}
-+function setupVoice(){if(!("speechSynthesis"in window))return;const choose=()=>{const v=speechSynthesis.getVoices();lilyVoice=v.find(x=>/^en-US/i.test(x.lang))||v.find(x=>/^en/i.test(x.lang))||null;};choose();speechSynthesis.onvoiceschanged=choose;}
-+function listenAnswer(correct){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){feedback("Микрофон недоступен: послушай и повтори вслух.","info");return;}const r=new SR();r.lang="en-US";r.onresult=e=>feedback(normalize(e.results[0][0].transcript).includes(normalize(correct))?"Звучит отлично! 🎉":"Хорошая попытка — послушай ещё раз.","success");r.start();}
-+function init(){updateStats();setupVoice();document.getElementById("startQuest").onclick=showMap;document.getElementById("gamesBtn").onclick=()=>startLevel("school");document.getElementById("mapHome").onclick=goHome;document.getElementById("lessonBack").onclick=showMap;document.getElementById("rewardMap").onclick=showMap;document.getElementById("rewardHome").onclick=goHome;}
- document.addEventListener("DOMContentLoaded",init);
-' | git apply --3way)
+const IMG = "https://yuliaishtar-hub.github.io/inglish-adventure/";
+
+const zones = [
+  {key:"starter", icon:"🌈", title:"Starter Unit · Welcome back!", sub:"Повторение: цвета, числа, формы, школьные слова"},
+  {key:"school", icon:"🏫", title:"Module 1 · School Days!", sub:"Школа, предметы, числа 1–20, команды, to be"},
+  {key:"family", icon:"👨‍👩‍👧", title:"Module 2 · Family Moments!", sub:"Семья, have got, притяжательные слова, множественное число"},
+  {key:"likes", icon:"🍎", title:"Module 3 · All the Things I Like!", sub:"Еда, напитки, like / don’t like, some / any"},
+  {key:"toys", icon:"🧸", title:"Module 4 · Come in and Play!", sub:"Игрушки, комнаты, мебель, принадлежность"},
+  {key:"animals", icon:"🐾", title:"Module 5 · Furry Friends!", sub:"Животные, части тела, can / can’t, описание"},
+  {key:"home", icon:"🏡", title:"Module 6 · Home, Sweet Home!", sub:"Комнаты, предметы и где они находятся"},
+  {key:"dayoff", icon:"🌳", title:"Module 7 · A Day Off!", sub:"Действия сейчас, парк и свободное время"},
+  {key:"daybyday", icon:"⏰", title:"Module 8 · Day by Day!", sub:"Распорядок дня, время и привычные действия"}
+];
+
+const q = (question, image, options, correctIndex, tip="") => ({type:"choice", question, image, options, correctIndex, tip});
+const build = (question, words, answer, tip="") => ({type:"build", question, words, answer, tip});
+
+const levels = {
+  starter:{name:"🌈 Starter Unit · Welcome back!", questions:[
+    q("What colour is it?","🔵",["It’s blue.","It’s a circle.","It’s ten."],0,"blue = синий"),
+    q("How many stars can you see?","⭐⭐⭐⭐⭐",["Five.","Fifteen.","Twenty."],0,"Сосчитай звёзды."),
+    build("Собери: «Меня зовут Лили».",["name","My","Lily.","is"],"My name is Lily.","My name is… = Меня зовут…"),
+    q("Choose a school item.","✏️",["a pencil","a sandwich","a dog"],0,"pencil = карандаш"),
+    build("Собери команду учителя.",["your","Open","book!"],"Open your book!","Команда начинается с Open.")
+  ]},
+  school:{name:"🏫 Module 1 · School Days!", questions:[
+    q("What is it?",IMG+"School bag.jpg",["It’s a school bag.","It’s a pencil.","It’s a ruler."],0,"school bag = школьная сумка"),
+    q("What is it?",IMG+"pen.jpg",["It’s a pen.","It’s an eraser.","It’s a book."],0,"pen = ручка"),
+    q("What is it?",IMG+"Eraser.jpg",["It’s a ruler.","It’s an eraser.","It’s a pen."],1,"Перед eraser нужен an."),
+    build("Собери: «Что это?»",["this?","What’s","It","a"],"What’s this?","What’s this? — Что это?"),
+    build("Собери: «Это карандаш».",["a","It’s","pencil","ruler"],"It’s a pencil.","It’s + a + предмет."),
+    q("How many books?","📚📚📚",["Three.","Thirteen.","Thirty."],0,"Three = три"),
+    build("Собери команду.",["sit","Please","down."],"Please sit down.","Please делает команду вежливой.")
+  ]},
+  family:{name:"👨‍👩‍👧 Module 2 · Family Moments!", questions:[
+    q("Who is she?",IMG+"mummy.jpg",["She’s my mummy.","She’s my sister.","She’s my grandma."],0,"She’s = She is"),
+    q("Who is he?",IMG+"daddy.jpg",["He’s my grandpa.","He’s my daddy.","He’s my brother."],1,"He’s = He is"),
+    build("Собери: «У меня есть сестра».",["a","have","sister.","I","got"],"I have got a sister.","have got = иметь / у меня есть"),
+    build("Собери вопрос.",["got","a","brother?","Have","you"],"Have you got a brother?","Have стоит первым в вопросе."),
+    q("Choose the plural.","👧 + 👧",["two sisters","two sister","a sisters"],0,"Во множественном числе обычно добавляем -s."),
+    build("Собери: «Это моя мама».",["my","This","mummy.","is"],"This is my mummy.","my = мой / моя / моё"),
+    q("Who is she?",IMG+"grandmagrandpa.jpg",["She’s my grandma.","She’s my mummy.","She’s my sister."],0,"grandma = бабушка")
+  ]},
+  likes:{name:"🍎 Module 3 · All the Things I Like!", questions:[
+    q("What do you like?","🍎",["I like apples.","I am apples.","I have apples."],0,"like = нравиться / любить"),
+    q("Choose a drink.","🥛",["milk","chair","kite"],0,"milk = молоко"),
+    build("Собери: «Я не люблю молоко».",["don’t","milk.","I","like"],"I don’t like milk.","don’t + like = не люблю"),
+    q("Choose the correct question.","🍕",["Do you like pizza?","Are you like pizza?","You do like pizza?"],0,"Do помогает задать вопрос с like."),
+    build("Собери вопрос с any.",["got","Have","any","you","juice?"],"Have you got any juice?","any часто используется в вопросах."),
+    q("Choose the correct word.","🍰",["some cake","some cakeses","a some cake"],0,"some = немного / некоторое количество"),
+    build("Собери: «Я люблю мороженое».",["ice","I","cream.","like"],"I like ice cream.","I like + еда.")
+  ]},
+  toys:{name:"🧸 Module 4 · Come in and Play!", questions:[
+    q("What is it?","🧸",["It’s a teddy bear.","It’s a ruler.","It’s a book."],0,"teddy bear = плюшевый мишка"),
+    q("Where is the ball?","⚽📦",["It’s in the box.","It’s on Monday.","It’s a box."],0,"in the box = в коробке"),
+    build("Собери: «Это комната Бетси».",["is","room.","This","Betsy’s"],"This is Betsy’s room.","’s показывает принадлежность."),
+    q("Choose the correct phrase.","🪑",["This is a chair.","These is a chair.","This are a chair."],0,"This используется с одним предметом."),
+    build("Собери: «У меня есть робот».",["a","robot.","have","I","got"],"I have got a robot.","have got = у меня есть"),
+    q("Choose a room.","🛏️",["bedroom","pencil","sandwich"],0,"bedroom = спальня"),
+    q("Choose the plural.","🧸🧸",["two teddy bears","two teddy bear","a teddy bears"],0,"bear → bears")
+  ]},
+  animals:{name:"🐾 Module 5 · Furry Friends!", questions:[
+    q("What is it?","🐄",["It’s a cow.","It’s a frog.","It’s a fish."],0,"cow = корова"),
+    q("What can it do?","🐦",["It can fly.","It can’t fly.","It is a chair."],0,"can = умеет / может"),
+    build("Собери: «Собака умеет бегать».",["can","A","dog","run."],"A dog can run.","can + глагол без to"),
+    q("Choose the body part.","🐘👂",["ear","kitchen","table"],0,"ear = ухо"),
+    build("Собери отрицание.",["can’t","A","fish","walk."],"A fish can’t walk.","can’t = не может"),
+    q("Choose the animal.","🦘",["a kangaroo","a mouse","a cow"],0,"kangaroo = кенгуру"),
+    q("How many?","🐾🐾🐾",["three paws","three paw","a paws"],0,"Во множественном числе paws.")
+  ]},
+  home:{name:"🏡 Module 6 · Home, Sweet Home!", questions:[
+    q("What room is it?","🛏️",["It’s a bedroom.","It’s a kitchen.","It’s a bathroom."],0,"bedroom = спальня"),
+    q("Where is the lamp?","💡🪑",["It’s on the table.","It’s a kitchen.","It’s blue."],0,"on the table = на столе"),
+    build("Собери: «Кот на стуле».",["is","The","cat","on","the","chair."],"The cat is on the chair.","on = на"),
+    q("Where is the ball?","⚽📦",["It’s in the box.","It’s under Monday.","It’s a box."],0,"in = в / внутри"),
+    build("Собери вопрос.",["the","Where’s","cat?"],"Where’s the cat?","Where’s = Where is"),
+    q("Choose the room.","🍳",["kitchen","bedroom","garden"],0,"kitchen = кухня"),
+    q("Choose the correct plural.","📦📦",["boxes","boxs","box"],0,"box → boxes")
+  ]},
+  dayoff:{name:"🌳 Module 7 · A Day Off!", questions:[
+    q("What is she doing?","🏃‍♀️",["She’s running.","She runs yesterday.","She is a pencil."],0,"Сейчас: be + -ing."),
+    build("Собери: «Он играет в парке».",["is","He","playing","in","the","park."],"He is playing in the park.","is + playing"),
+    q("What are they doing?","⚽👧👦",["They’re playing football.","They’re a house.","They play yesterday."],0,"They’re = They are"),
+    build("Собери вопрос.",["doing?","What","you","are"],"What are you doing?","What + are + you…"),
+    q("Choose the action.","🚲",["riding a bike","reading a cake","sleeping a chair"],0,"riding a bike = катается на велосипеде"),
+    build("Собери: «Мы смотрим телевизор».",["TV.","watching","We’re"],"We’re watching TV.","We’re = We are"),
+    q("Choose the correct form.","🎨",["I am drawing.","I drawing.","I am draw."],0,"am + drawing")
+  ]},
+  daybyday:{name:"⏰ Module 8 · Day by Day!", questions:[
+    q("What time is it?","🕖",["It’s seven o’clock.","It’s seven apples.","It’s a clock seven."],0,"o’clock используется для целого часа."),
+    build("Собери: «Я встаю в семь».",["up","I","at","seven.","get"],"I get up at seven.","get up = вставать"),
+    q("Choose a daily action.","🪥",["brush my teeth","play a bedroom","eat a clock"],0,"brush my teeth = чистить зубы"),
+    build("Собери: «Я иду в школу».",["school.","go","I","to"],"I go to school.","go to school = идти в школу"),
+    q("Choose the correct sentence.","🌙",["I go to bed at nine.","I go bed nine.","I am bed at nine."],0,"go to bed = ложиться спать"),
+    q("When do you do it?","🍳",["in the morning","in the pencil","in the chair"],0,"morning = утро"),
+    build("Собери вопрос о времени.",["time","What","is","it?"],"What time is it?","What time…? = Который час?")
+  ]}
+};
+
+let state = loadState();
+let currentKey = "starter";
+let currentIndex = 0;
+let answered = false;
+let levelStartXP = 0;
+let levelStartGems = 0;
+let lilyVoice = null;
+
+function loadState(){
+  try{
+    const saved = JSON.parse(localStorage.getItem("english_quest_v4") || "null");
+    if(saved && typeof saved === "object") return {xp:0,gems:0,completed:[],...saved};
+  }catch(e){}
+  return {xp:0,gems:0,completed:[]};
+}
+function save(){localStorage.setItem("english_quest_v4",JSON.stringify(state));updateStats();}
+function updateStats(){
+  ["playerXP","mapXP","lessonXP"].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=state.xp;});
+  ["playerGems","mapGems","lessonGems"].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=state.gems;});
+}
+function show(id){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));document.getElementById(id)?.classList.add("active");window.scrollTo(0,0);}
+function goHome(){show("homeScreen");updateStats();}
+function showMap(){renderMap();updateStats();show("mapScreen");}
+function renderMap(){
+  const grid=document.getElementById("worldMap"); if(!grid)return; grid.innerHTML="";
+  zones.forEach((z,i)=>{
+    const unlocked=i===0 || state.completed.includes(zones[i-1].key);
+    const done=state.completed.includes(z.key);
+    const card=document.createElement("button"); card.type="button"; card.className="world-card-item"+(unlocked?"":" locked");
+    card.innerHTML=`<div class="world-card-top"><div class="world-icon">${z.icon}</div>${unlocked?`<span class="chapter-pill">${done?"✓ Пройдено":"Играть"}</span>`:'<div class="lock">🔒</div>'}</div><div class="world-name">${z.title}</div><div class="world-description">${z.sub}</div>`;
+    if(unlocked)card.addEventListener("click",()=>startLevel(z.key));
+    grid.appendChild(card);
+  });
+}
+function startLevel(key){currentKey=key;currentIndex=0;answered=false;levelStartXP=state.xp;levelStartGems=state.gems;document.getElementById("lessonTitle").textContent=levels[key].name;show("lessonScreen");renderLesson();}
+function renderLesson(){
+  const data=levels[currentKey], total=data.questions.length;
+  document.getElementById("lessonCounter").textContent=`${currentIndex+1} / ${total}`;
+  document.getElementById("progressBar").style.width=`${(currentIndex/total)*100}%`;
+  const item=data.questions[currentIndex]; item.type==="build"?renderBuilder(item):renderChoice(item);
+}
+function visual(image){return typeof image==="string"&&image.startsWith("http")?`<img class="big-image" src="${image}" alt="Learning illustration">`:`<div class="big-image emoji-image">${image}</div>`;}
+function renderChoice(item){
+  answered=false;
+  const box=document.getElementById("lessonContent");
+  box.innerHTML=`${visual(item.image)}<div class="lesson-kind">СЛОВО · ФРАЗА · ПОНИМАНИЕ</div><div class="question">${item.question}</div><button id="listenQuestion" class="listen-button" type="button">🔊 Слушать</button><div id="answers" class="answer-grid"></div><div id="feedback" class="feedback"></div><div class="lesson-actions"><button id="speakButton" class="speak-button" type="button" hidden>🎤 Повторить</button><button id="nextButton" class="next-button" type="button" hidden>Дальше ➜</button></div>`;
+  document.getElementById("listenQuestion").onclick=()=>speak(item.question);
+  document.getElementById("speakButton").onclick=()=>listenAnswer(item.options[item.correctIndex]);
+  document.getElementById("nextButton").onclick=nextItem;
+  const answers=document.getElementById("answers");
+  item.options.forEach((text,i)=>{const b=document.createElement("button");b.type="button";b.className="answer-button";b.textContent=text;b.onclick=()=>selectChoice(i,b,item);answers.appendChild(b);});
+}
+function renderBuilder(item){
+  answered=false; let picked=[];
+  const box=document.getElementById("lessonContent");
+  box.innerHTML=`<div class="builder-hero">🧩</div><div class="lesson-kind">СОБЕРИ ФРАЗУ</div><div class="question">${item.question}</div><button id="buildListen" class="listen-button" type="button">🔊 Послушать ответ</button><div class="sentence-slot" id="sentenceSlot">Нажимай слова по порядку</div><div class="word-bank" id="wordBank"></div><div id="feedback" class="feedback"></div><div class="lesson-actions"><button id="resetSentence" class="secondary-button small-button" type="button">↺ Заново</button><button id="checkSentence" class="next-button" type="button">Проверить ✓</button></div>`;
+  const bank=document.getElementById("wordBank");
+  [...item.words].sort(()=>Math.random()-0.5).forEach(word=>{const b=document.createElement("button");b.type="button";b.className="word-tile";b.textContent=word;b.onclick=()=>{picked.push(word);b.disabled=true;updateSlot();};bank.appendChild(b);});
+  function updateSlot(){document.getElementById("sentenceSlot").textContent=picked.join(" ")||"Нажимай слова по порядку";}
+  document.getElementById("buildListen").onclick=()=>speak(item.answer,true);
+  document.getElementById("resetSentence").onclick=()=>{picked=[];document.querySelectorAll(".word-tile").forEach(b=>b.disabled=false);updateSlot();};
+  document.getElementById("checkSentence").onclick=()=>{if(normalize(picked.join(" "))===normalize(item.answer)){answered=true;award(item,`Отлично! ${item.answer}`);document.getElementById("checkSentence").hidden=true;}else{feedback(item.tip||"Проверь порядок слов.","error");speak(item.answer,true);}};
+}
+function selectChoice(index,btn,item){if(answered)return;if(index===item.correctIndex){document.querySelectorAll(".answer-button").forEach(b=>b.disabled=true);btn.classList.add("correct");award(item,`Верно! ${item.tip}`);}else{btn.classList.add("wrong");btn.disabled=true;feedback("Попробуй ещё раз. 🔎","error");}}
+function award(item,message){if(answered&&item.type!=="build")return;answered=true;state.xp+=10;state.gems+=1;save();feedback(`${message||"Отлично!"} +10 XP ⭐`,"success");document.getElementById("speakButton")?.removeAttribute("hidden");document.getElementById("nextButton")?.removeAttribute("hidden");speak(item.answer||item.options[item.correctIndex],true);}
+function feedback(text,kind){const e=document.getElementById("feedback");if(e){e.textContent=text;e.className=`feedback ${kind}`;}}
+function nextItem(){currentIndex++;if(currentIndex>=levels[currentKey].questions.length){finishLevel();return;}renderLesson();}
+function finishLevel(){
+  if(!state.completed.includes(currentKey))state.completed.push(currentKey);save();
+  const x=state.xp-levelStartXP,g=state.gems-levelStartGems;
+  const pos=zones.findIndex(z=>z.key===currentKey),next=zones[pos+1];
+  document.getElementById("rewardTitle").textContent="Глава пройдена!";
+  document.getElementById("rewardText").textContent=next?`Ты заработал ${x} XP и ${g} 💎. Следующая глава: ${next.title}`:`Ты прошёл весь маршрут Spotlight 3! ${x} XP и ${g} 💎`;
+  document.getElementById("rewardXP").textContent=`+${x} XP`;document.getElementById("rewardGems").textContent=`+${g}`;show("rewardScreen");speak("Well done!",true);
+}
+function normalize(s){return String(s).toLowerCase().replace(/[.,!?;:’']/g,"").replace(/\s+/g," ").trim();}
+function speak(text,slow=false){if(!("speechSynthesis" in window))return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang="en-US";u.rate=slow?.72:.88;u.pitch=1.05;if(lilyVoice)u.voice=lilyVoice;speechSynthesis.speak(u);}
+function setupVoice(){if(!("speechSynthesis" in window))return;const choose=()=>{const voices=speechSynthesis.getVoices();lilyVoice=voices.find(v=>/^en-US/i.test(v.lang))||voices.find(v=>/^en-GB/i.test(v.lang))||voices.find(v=>/^en/i.test(v.lang))||null;};choose();speechSynthesis.onvoiceschanged=choose;}
+function listenAnswer(correct){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){feedback("Микрофон в этом браузере недоступен. Послушай и повтори вслух.","info");return;}
+  const r=new SR();r.lang="en-US";r.interimResults=false;r.maxAlternatives=3;
+  r.onresult=e=>{const heard=normalize(e.results[0][0].transcript), target=normalize(correct);const words=target.split(" ").filter(w=>w.length>2);const hits=words.filter(w=>heard.includes(w)).length;feedback(hits>=Math.max(1,Math.ceil(words.length*.6))?"Звучит отлично! 🎉":"Хорошая попытка — послушай ещё раз и повтори.",hits>=Math.max(1,Math.ceil(words.length*.6))?"success":"info");};
+  r.onerror=()=>feedback("Не получилось услышать голос. Нажми ещё раз.","info");try{r.start();}catch(e){feedback("Микрофон уже занят. Попробуй ещё раз.","info");}
+}
+function init(){
+  updateStats();setupVoice();
+  document.getElementById("startQuest")?.addEventListener("click",showMap);
+  document.getElementById("gamesBtn")?.addEventListener("click",()=>startLevel("school"));
+  document.getElementById("mapHome")?.addEventListener("click",goHome);
+  document.getElementById("lessonBack")?.addEventListener("click",showMap);
+  document.getElementById("rewardMap")?.addEventListener("click",showMap);
+  document.getElementById("rewardHome")?.addEventListener("click",goHome);
+}
+document.addEventListener("DOMContentLoaded",init);
