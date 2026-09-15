@@ -33,13 +33,13 @@ const levels = {
     build("Собери команду.",["sit","Please","down."],"Please sit down.","Please делает команду вежливой.")
   ]},
   family:{name:"👨‍👩‍👧 Module 2 · Family Moments!", questions:[
-    q("Who is she?",IMG+"mummy.jpg",["She’s my mummy.","She’s my sister.","She’s my grandma."],0,"She’s = She is"),
-    q("Who is he?",IMG+"daddy.jpg",["He’s my grandpa.","He’s my daddy.","He’s my brother."],1,"He’s = He is"),
-    build("Собери: «У меня есть сестра».",["a","have","sister.","I","got"],"I have got a sister.","have got = иметь / у меня есть"),
-    build("Собери вопрос.",["got","a","brother?","Have","you"],"Have you got a brother?","Have стоит первым в вопросе."),
-    q("Choose the plural.","👧 + 👧",["two sisters","two sister","a sisters"],0,"Во множественном числе обычно добавляем -s."),
-    build("Собери: «Это моя мама».",["my","This","mummy.","is"],"This is my mummy.","my = мой / моя / моё"),
-    q("Who is she?",IMG+"grandmagrandpa.jpg",["She’s my grandma.","She’s my mummy.","She’s my sister."],0,"grandma = бабушка")
+    q("Who is she?",IMG+"mummy.jpg",["She’s my mummy.","She’s my sister.","She’s my grandma."],0,"mummy = мама"),
+    q("Who is he?",IMG+"daddy.jpg",["He’s my grandpa.","He’s my daddy.","He’s my brother."],1,"daddy = папа"),
+    q("Who is she?",IMG+"Lilissisterbig.jpg",["She’s my sister.","She’s my mummy.","She’s my grandma."],0,"sister = сестра"),
+    q("Who is she?",IMG+"grandma.jpg",["She’s my grandma.","She’s my mummy.","She’s my sister."],0,"grandma = бабушка"),
+    q("Who is he?",IMG+"grandpa.jpg",["He’s my grandpa.","He’s my daddy.","He’s my brother."],0,"grandpa = дедушка"),
+    q("Who are they?",IMG+"mum dad.jpg",["They’re my mum and dad.","They’re my grandma and grandpa.","They’re my sister and brother."],0,"mum and dad = мама и папа"),
+    q("Who are they?",IMG+"grandmagrandpa.jpg",["They’re my grandma and grandpa.","They’re my mum and dad.","They’re my sister and brother."],0,"grandma and grandpa = бабушка и дедушка")
   ]},
   likes:{name:"🍎 Module 3 · All the Things I Like!", questions:[
     q("What do you like?","🍎",["I like apples.","I am apples.","I have apples."],0,"like = нравиться / любить"),
