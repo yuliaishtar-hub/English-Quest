@@ -8,6 +8,7 @@
       ["Hi! I'm Lily! 👋","Привет! Я Лили!","Hi! I'm Lily!","Lili.jpg"],
       ["This is my family.","Это моя семья.","This is my family.","mum dad.jpg"],
       ["This is my mum.","Это моя мама.","This is my mum.","mummy.jpg"],
+      ["This is my dad.","Это мой папа.","This is my dad.","daddy.jpg"],
       ["I have got a sister.","У меня есть сестра.","I have got a sister.","Lilissisterbig.jpg"],
       ["I love my grandma and grandpa! 💜","Я люблю свою бабушку и дедушку!","I love my grandma and grandpa!","grandmagrandpa.jpg"]
     ],
