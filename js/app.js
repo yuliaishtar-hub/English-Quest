@@ -188,6 +188,8 @@ function listenAnswer(correct){
   r.onresult=e=>{const heard=normalize(e.results[0][0].transcript), target=normalize(correct);const words=target.split(" ").filter(w=>w.length>2);const hits=words.filter(w=>heard.includes(w)).length;feedback(hits>=Math.max(1,Math.ceil(words.length*.6))?"Звучит отлично! 🎉":"Хорошая попытка — послушай ещё раз и повтори.",hits>=Math.max(1,Math.ceil(words.length*.6))?"success":"info");};
   r.onerror=()=>feedback("Не получилось услышать голос. Нажми ещё раз.","info");try{r.start();}catch(e){feedback("Микрофон уже занят. Попробуй ещё раз.","info");}
 }
+window.__questBonus=(amount)=>{state.xp+=amount;save();const el=document.getElementById("labXP");if(el)el.textContent=state.xp;};
+
 function setupDashboard(){
   const savedAvatar=localStorage.getItem("english_quest_avatar");
   const img=document.getElementById("childAvatar"), placeholder=document.getElementById("avatarPlaceholder");
@@ -211,7 +213,7 @@ function setupDashboard(){
     const tool=b.dataset.tool;
     if(tool==="wordbook" && window.openWordbook){window.openWordbook();return;}
     if(tool==="size"){startSizeGame();return;}
-    const map={tobe:"school",todo:"likes",singular:"toys",plural:"toys"};
+    const map={tobe:"tobe",todo:"todo",have:"have",has:"has",singular:"plural",plural:"plural",size:"size"};
     startLevel(map[tool]||"starter");
   }));
 }
@@ -228,6 +230,7 @@ function startSizeGame(){
   document.getElementById("minusSize").onclick=()=>{size=Math.max(.55,size-.2);art.style.transform=`scale(${size})`;fb.textContent="Smaller! Now try Smallest.";fb.className="feedback info";};
   document.getElementById("resetSize").onclick=()=>{size=1;art.style.transform="scale(1)";fb.textContent="Ready for another try!";};
 }
+function showHomeFromLab(){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));document.getElementById("homeScreen")?.classList.add("active");updateStats();}
 function init(){
   updateStats();setupVoice();setupDashboard();
   document.getElementById("startQuest")?.addEventListener("click",showMap);
@@ -235,6 +238,6 @@ function init(){
   document.getElementById("mapHome")?.addEventListener("click",goHome);
   document.getElementById("lessonBack")?.addEventListener("click",showMap);
   document.getElementById("rewardMap")?.addEventListener("click",showMap);
-  document.getElementById("rewardHome")?.addEventListener("click",goHome);
+  document.getElementById("rewardHome")?.addEventListener("click",goHome);\n  document.getElementById("topicLabBack")?.addEventListener("click",showHomeFromLab);
 }
 document.addEventListener("DOMContentLoaded",init);
