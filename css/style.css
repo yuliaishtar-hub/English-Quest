@@ -60,3 +60,28 @@
 .question-with-translation::after{content:attr(data-translation);position:absolute;left:50%;bottom:calc(100% + 10px);transform:translateX(-50%) translateY(4px);width:max-content;max-width:min(520px,90vw);padding:10px 14px;border-radius:14px;background:#fff;color:#333;box-shadow:0 8px 24px rgba(0,0,0,.18);font-size:16px;font-weight:600;line-height:1.3;opacity:0;pointer-events:none;transition:opacity .18s ease,transform .18s ease;z-index:100}
 .question-with-translation:hover::after,.question-with-translation:focus::after{opacity:1;transform:translateX(-50%) translateY(0)}
 @media (max-width:600px){.question-with-translation::after{font-size:14px;max-width:82vw}}
+
+
+/* AM IS ARE memory adventure */
+.memory-zone{margin:0 0 20px;padding:22px;border-radius:24px;background:radial-gradient(circle at 50% 0,rgba(90,190,255,.16),transparent 55%),#071b36;border:1px solid #28527d;box-shadow:inset 2px 2px 7px rgba(84,150,210,.18),inset -6px -6px 12px #020914}
+.memory-zone-title{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+.memory-zone-title>span{font-size:32px}.memory-zone-title b{display:block;font-size:25px;color:#f2f8ff}.memory-zone-title small{display:block;color:#8fa9c8;margin-top:4px}
+.memory-diagram{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.memory-card{position:relative;text-align:center;padding:18px;border-radius:22px;min-height:270px;background:linear-gradient(145deg,#12365e,#091f3d);border:2px solid #28547e;box-shadow:inset 3px 3px 7px rgba(98,157,211,.18),inset -6px -6px 12px #020914;overflow:hidden}
+.memory-card:after{content:"";position:absolute;width:100px;height:100px;border-radius:50%;right:-30px;top:-35px;background:rgba(115,206,255,.12)}
+.am-card{border-color:#5a9cf0}.is-card{border-color:#b47cf4}.are-card{border-color:#55cdb2}
+.memory-character{font-size:55px;height:70px;display:grid;place-items:center}
+.memory-form{font-size:54px;font-weight:1000;letter-spacing:2px;margin:4px 0}
+.am-card .memory-form{color:#7ec4ff}.is-card .memory-form{color:#d29aff}.are-card .memory-form{color:#79e5ca}
+.memory-rule{font-size:18px;line-height:1.35;color:#e8f2ff}.memory-rule b{font-size:21px}
+.memory-example{margin:13px 0 10px;color:#a9c6e5;font-size:15px;font-weight:800}
+.memory-say{padding:9px 14px;border-radius:12px;background:#153a64;color:#fff;font-weight:900}
+.memory-slogan{text-align:center;margin:16px 0;padding:15px;border-radius:16px;background:#0d2949;color:#a9dfff;font-weight:900;font-size:17px;letter-spacing:.5px}
+.memory-slider-box{padding:20px;border-radius:20px;background:linear-gradient(145deg,#102e50,#071b34);border:1px solid #264e78}
+.slider-title{text-align:center;font-size:18px;font-weight:900;margin-bottom:12px}.memory-slider-row{display:grid;grid-template-columns:60px 1fr 70px;align-items:center;gap:14px;text-align:center;font-size:26px;font-weight:1000}.memory-slider-row input{width:100%;accent-color:#63bfff}
+.slider-hero{text-align:center;margin:14px auto;padding:16px;border-radius:18px;background:#091f3b;font-size:28px;line-height:1.45}.slider-hero small{font-size:15px;color:#a9c2df}
+.slider-dots{display:flex;justify-content:center;gap:7px;flex-wrap:wrap}.slider-dots button{padding:8px 11px;border-radius:10px;background:#15385e;color:#fff;font-weight:900}.slider-dots button.active{background:#2478ad;outline:2px solid #6dc9ff}
+.memory-game-box{margin-top:18px;text-align:center;padding:22px;border-radius:22px;background:radial-gradient(circle at 50% 0,rgba(119,94,255,.18),transparent 50%),#101d43;border:1px solid #46538e}
+.game-title{font-size:21px;font-weight:900;color:#d9e7ff}.game-character{font-size:65px;margin:8px}.game-question{font-size:32px;font-weight:1000;padding:13px}.game-buttons{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}.game-buttons button{min-width:105px;padding:15px 20px;border-radius:15px;background:#183c67;color:#fff;font-size:21px;font-weight:1000;border:1px solid #315e8a;box-shadow:inset 2px 2px 4px #39688f,inset -4px -4px 8px #030b1b}.game-buttons button.game-right{background:#16604f;color:#a8f2dd}.game-buttons button.game-wrong{background:#71394a;color:#ffd4dc}.game-feedback{min-height:27px;margin:12px;color:#a9c7e8;font-weight:800}.game-score{font-size:20px;font-weight:1000;color:#ffd978}
+@media(max-width:850px){.memory-diagram{grid-template-columns:1fr}.memory-card{min-height:230px}.memory-zone-title b{font-size:21px}}
+@media(max-width:520px){.memory-zone{padding:15px}.memory-form{font-size:46px}.memory-slider-row{grid-template-columns:45px 1fr 55px;font-size:21px}.game-question{font-size:26px}.memory-slogan{font-size:14px;line-height:1.8}}
