@@ -53,3 +53,10 @@
 .repeat-card p{color:#aabbd0;margin:7px 0 15px}
 @media(max-width:850px){.picture-theory{grid-template-columns:1fr 1fr}.theory-hero{flex-direction:column}.lili-theory{width:100%;height:260px;flex-basis:auto}}
 @media(max-width:520px){.picture-theory{grid-template-columns:1fr}.quiz-sentence{font-size:24px}.repeat-card{flex-direction:column;text-align:center}.lili-theory{height:230px}}
+
+
+/* Russian translation on hover */
+.question-with-translation{position:relative;cursor:help;outline:none}
+.question-with-translation::after{content:attr(data-translation);position:absolute;left:50%;bottom:calc(100% + 10px);transform:translateX(-50%) translateY(4px);width:max-content;max-width:min(520px,90vw);padding:10px 14px;border-radius:14px;background:#fff;color:#333;box-shadow:0 8px 24px rgba(0,0,0,.18);font-size:16px;font-weight:600;line-height:1.3;opacity:0;pointer-events:none;transition:opacity .18s ease,transform .18s ease;z-index:100}
+.question-with-translation:hover::after,.question-with-translation:focus::after{opacity:1;transform:translateX(-50%) translateY(0)}
+@media (max-width:600px){.question-with-translation::after{font-size:14px;max-width:82vw}}
