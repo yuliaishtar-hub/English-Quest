@@ -116,6 +116,11 @@ function save(){localStorage.setItem("english_quest_v4",JSON.stringify(state));u
 function updateStats(){
   ["playerXP","mapXP","lessonXP"].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=state.xp;});
   ["playerGems","mapGems","lessonGems"].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=state.gems;});
+  const xp=document.getElementById("progressXP"), lessons=document.getElementById("progressLessons"), level=document.getElementById("playerLevel"), meter=document.getElementById("xpMeter");
+  if(xp)xp.textContent=state.xp;
+  if(lessons)lessons.textContent=state.completed.length;
+  if(level)level.textContent=Math.max(1,Math.floor(state.xp/100)+1);
+  if(meter)meter.style.width=(state.xp%100)+"%";
 }
 function show(id){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));document.getElementById(id)?.classList.add("active");window.scrollTo(0,0);}
 function goHome(){show("homeScreen");updateStats();}
@@ -183,8 +188,48 @@ function listenAnswer(correct){
   r.onresult=e=>{const heard=normalize(e.results[0][0].transcript), target=normalize(correct);const words=target.split(" ").filter(w=>w.length>2);const hits=words.filter(w=>heard.includes(w)).length;feedback(hits>=Math.max(1,Math.ceil(words.length*.6))?"Звучит отлично! 🎉":"Хорошая попытка — послушай ещё раз и повтори.",hits>=Math.max(1,Math.ceil(words.length*.6))?"success":"info");};
   r.onerror=()=>feedback("Не получилось услышать голос. Нажми ещё раз.","info");try{r.start();}catch(e){feedback("Микрофон уже занят. Попробуй ещё раз.","info");}
 }
+function setupDashboard(){
+  const savedAvatar=localStorage.getItem("english_quest_avatar");
+  const img=document.getElementById("childAvatar"), placeholder=document.getElementById("avatarPlaceholder");
+  if(savedAvatar&&img){img.src=savedAvatar;img.hidden=false;if(placeholder)placeholder.hidden=true;}
+  document.getElementById("avatarInput")?.addEventListener("change",e=>{
+    const file=e.target.files?.[0]; if(!file)return;
+    const reader=new FileReader();
+    reader.onload=()=>{localStorage.setItem("english_quest_avatar",reader.result);if(img){img.src=reader.result;img.hidden=false;}if(placeholder)placeholder.hidden=true;};
+    reader.readAsDataURL(file);
+  });
+  const messages=[
+    "You can do it! Let's learn something new today!",
+    "Great job! Every little step makes your English stronger!",
+    "Ready? I have a fun challenge for you!",
+    "Let's play, listen and speak English together!"
+  ];
+  const msg=document.getElementById("coachMessage"); if(msg)msg.textContent=messages[state.completed.length%messages.length];
+  document.getElementById("coachListen")?.addEventListener("click",()=>speak(msg?.textContent||messages[0]));
+  document.querySelectorAll(".quest-tile").forEach(b=>b.addEventListener("click",()=>startLevel(b.dataset.zone)));
+  document.querySelectorAll(".tool-button").forEach(b=>b.addEventListener("click",()=>{
+    const tool=b.dataset.tool;
+    if(tool==="wordbook" && window.openWordbook){window.openWordbook();return;}
+    if(tool==="size"){startSizeGame();return;}
+    const map={tobe:"school",todo:"likes",singular:"toys",plural:"toys"};
+    startLevel(map[tool]||"starter");
+  }));
+}
+function startSizeGame(){
+  currentKey="starter";currentIndex=0;answered=false;show("lessonScreen");
+  document.getElementById("lessonTitle").textContent="🔍 Big · Bigger · Biggest";
+  document.getElementById("lessonCounter").textContent="Игра";
+  document.getElementById("progressBar").style.width="100%";
+  const box=document.getElementById("lessonContent");
+  let size=1;
+  box.innerHTML=`<div class="lesson-kind">ИНТЕРАКТИВНАЯ ИГРА</div><div class="question">Сделай картинку BIGGER!</div><div class="big-image emoji-image" id="sizeArt" style="font-size:100px;transform:scale(1);transition:.25s">🐘</div><div class="lesson-actions"><button class="speak-button" id="minusSize">−</button><button class="speak-button" id="plusSize">＋</button><button class="speak-button" id="resetSize">↺</button></div><div id="feedback" class="feedback info">Увеличивай и уменьшай слона. Попробуй сделать его BIGGEST! ⭐</div>`;
+  const art=document.getElementById("sizeArt"), fb=document.getElementById("feedback");
+  document.getElementById("plusSize").onclick=()=>{size=Math.min(2.2,size+.2);art.style.transform=`scale(${size})`;fb.textContent=size>=2?"Amazing! BIGGEST! 🏆":"Bigger! Keep going!";fb.className="feedback success";state.xp+=2;save();};
+  document.getElementById("minusSize").onclick=()=>{size=Math.max(.55,size-.2);art.style.transform=`scale(${size})`;fb.textContent="Smaller! Now try Smallest.";fb.className="feedback info";};
+  document.getElementById("resetSize").onclick=()=>{size=1;art.style.transform="scale(1)";fb.textContent="Ready for another try!";};
+}
 function init(){
-  updateStats();setupVoice();
+  updateStats();setupVoice();setupDashboard();
   document.getElementById("startQuest")?.addEventListener("click",showMap);
   document.getElementById("gamesBtn")?.addEventListener("click",()=>startLevel("school"));
   document.getElementById("mapHome")?.addEventListener("click",goHome);
