@@ -212,7 +212,7 @@ function setupDashboard(){
   document.querySelectorAll(".tool-button").forEach(b=>b.addEventListener("click",()=>{
     const tool=b.dataset.tool;
     if(tool==="wordbook" && window.openWordbook){window.openWordbook();return;}
-    if(tool==="size"){startSizeGame();return;}
+    if(tool==="size"){window.openTopicLab?.("size");return;}
     const map={tobe:"tobe",todo:"todo",have:"have",has:"has",singular:"plural",plural:"plural",size:"size"};
     startLevel(map[tool]||"starter");
   }));
