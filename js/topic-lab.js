@@ -1,204 +1,64 @@
-/* English Quest · Topic Lab
-   Intro → visual rule → chant/song → mini-game → letter builder → bonus.
-*/
+/* English Quest · Interactive Theory Lab v3 */
 (() => {
-  const TOPICS = {
-    tobe: {
-      title:"TO BE · Волшебный хамелеон",
-      subtitle:"Он меняет форму в зависимости от героя.",
-      forms:[
-        ["I","AM","I am happy."],["YOU","ARE","You are happy."],["HE","IS","He is happy."],
-        ["SHE","IS","She is happy."],["IT","IS","It is happy."],["WE","ARE","We are happy."],
-        ["THEY","ARE","They are happy."]
-      ],
-      rhyme:"I am, you are — clap, clap, clap!\nHe is, she is, it is — tap, tap, tap!\nWe are, they are — jump up high!\nAM · IS · ARE — now you know why!",
-      game:[
-        ["I","am"],["you","are"],["he","is"],["she","is"],["it","is"],["we","are"],["they","are"]
-      ],
-      words:["HAPPY","SCHOOL","PENCIL","FAMILY"]
-    },
-    todo: {
-      title:"TO DO · Помощник-вопросик",
-      subtitle:"DO дружит с I / you / we / they, а DOES — с he / she / it.",
-      forms:[
-        ["I","DO","Do I play?"],["YOU","DO","Do you play?"],["WE","DO","Do we play?"],["THEY","DO","Do they play?"],
-        ["HE","DOES","Does he play?"],["SHE","DOES","Does she play?"],["IT","DOES","Does it play?"]
-      ],
-      rhyme:"I DO, you DO — let's go, go, go!\nWe DO, they DO — now you know!\nHE DOES, SHE DOES, IT DOES too —\nDO or DOES? I know what to do!",
-      game:[
-        ["I","do"],["you","do"],["we","do"],["they","do"],["he","does"],["she","does"],["it","does"]
-      ],
-      words:["DO","DOES","PLAY","LIKE"]
-    },
-    have: {
-      title:"HAVE / HAS · Сундучок вещей",
-      subtitle:"HAVE — с I / you / we / they. HAS — с he / she / it.",
-      forms:[
-        ["I","HAVE","I have a book."],["YOU","HAVE","You have a book."],["WE","HAVE","We have a book."],
-        ["THEY","HAVE","They have a book."],["HE","HAS","He has a book."],["SHE","HAS","She has a book."],
-        ["IT","HAS","It has a tail."]
-      ],
-      rhyme:"I have, you have — clap your hands!\nWe have, they have — lots of plans!\nHe has, she has, it has too —\nHAVE or HAS? Easy for you!",
-      game:[
-        ["I","have"],["you","have"],["we","have"],["they","have"],["he","has"],["she","has"],["it","has"]
-      ],
-      words:["HAVE","HAS","BOOK","BAG"]
-    },
-    has: {
-      title:"HAS GOT · Сундучок сокровищ",
-      subtitle:"Говорим, что у кого-то есть.",
-      forms:[
-        ["I","HAVE GOT","I have got a cat."],["YOU","HAVE GOT","You have got a cat."],["WE","HAVE GOT","We have got a cat."],
-        ["THEY","HAVE GOT","They have got a cat."],["HE","HAS GOT","He has got a cat."],["SHE","HAS GOT","She has got a cat."],
-        ["IT","HAS GOT","It has got four legs."]
-      ],
-      rhyme:"Have got, have got — I have got!\nYou have got — a treasure lot!\nHe has got, she has got, it has got —\nHAS for one, HAVE for a lot!",
-      game:[
-        ["I","have got"],["you","have got"],["we","have got"],["they","have got"],["he","has got"],["she","has got"],["it","has got"]
-      ],
-      words:["HAVE","HAS","GOT","CAT"]
-    },
-    plural: {
-      title:"PLURAL · Клуб множества",
-      subtitle:"Один предмет превращаем в много: cat → cats, box → boxes.",
-      forms:[
-        ["1 CAT","→","2 CATS"],["1 BOOK","→","2 BOOKS"],["1 BUS","→","2 BUSES"],
-        ["1 BOX","→","2 BOXES"],["1 BABY","→","2 BABIES"],["1 CHILD","→","CHILDREN"]
-      ],
-      rhyme:"One cat, two cats — add an S!\nOne box, two boxes — ES!\nBaby changes Y to IES!\nAnd CHILD? CHILDREN — yes, yes, yes!",
-      game:[
-        ["cat","cats"],["book","books"],["box","boxes"],["bus","buses"],["baby","babies"],["child","children"]
-      ],
-      words:["CATS","BOXES","BABIES","CHILDREN"]
-    },
-    size: {
-      title:"BIG · BIGGER · BIGGEST",
-      subtitle:"Сравниваем: большой → больше → самый большой.",
-      forms:[
-        ["BIG","→","BIGGER"],["BIG","→","BIGGEST"],["SMALL","→","SMALLER"],["SMALL","→","SMALLEST"]
-      ],
-      rhyme:"Big, bigger, biggest — grow, grow, grow!\nSmall, smaller, smallest — down we go!\nOne, two, three — compare with me!",
-      game:[["big","bigger"],["small","smaller"],["biggest","smallest"]],
-      words:["BIG","BIGGER","BIGGEST","SMALL"]
-    }
-  };
-
-  function speak(text){
-    if(!("speechSynthesis" in window)) return;
-    speechSynthesis.cancel();
-    const u=new SpeechSynthesisUtterance(text);
-    u.lang="en-US"; u.rate=.82; u.pitch=1.08; speechSynthesis.speak(u);
-  }
-
-  function openTopicLab(key){
-    const data=TOPICS[key]||TOPICS.tobe;
-    const screen=document.getElementById("topicLabScreen");
-    if(!screen) return;
-    document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
-    screen.classList.add("active");
-    render(data,key);
-  }
-  window.openTopicLab=openTopicLab;
-  window.closeTopicLab=()=>{
-    document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
-    document.getElementById("homeScreen")?.classList.add("active");
-    window.scrollTo(0,0);
-  };
-
-  function render(data,key){
-    const root=document.getElementById("topicLabContent");
-    root.innerHTML = `
-      <div class="topic-lab-hero">
-        <div><div class="eyebrow">УРОК-ПРИКЛЮЧЕНИЕ · ${key.toUpperCase()}</div>
-        <h1>${data.title}</h1><p>${data.subtitle}</p></div>
-        <button class="round-button" id="labSpeakIntro" type="button">🔊</button>
-      </div>
-      <section class="lab-section intro-section">
-        <div class="lab-section-title"><span>1</span><div><b>Сначала поймём</b><small>Лили объясняет правило</small></div></div>
-        <div class="form-wheel" id="formWheel"></div>
-      </section>
-      <section class="lab-section">
-        <div class="lab-section-title"><span>2</span><div><b>Запоминаем ритмом</b><small>Нажми ▶ и повторяй вместе с Лили</small></div></div>
-        <div class="chant-card"><button class="chant-play" id="chantPlay">▶</button><div id="chantText">${data.rhyme.replace(/\n/g,"<br>")}</div></div>
-      </section>
-      <section class="lab-section">
-        <div class="lab-section-title"><span>3</span><div><b>Собери правильную пару</b><small>Перетаскивай форму к герою или нажимай по очереди</small></div></div>
-        <div class="match-board" id="matchBoard"></div>
-      </section>
-      <section class="lab-section">
-        <div class="lab-section-title"><span>4</span><div><b>Собери слово по буквам</b><small>Каждая правильная буква даёт бонус ⭐</small></div></div>
-        <div class="letter-game" id="letterGame"></div>
-      </section>
-    `;
-    document.getElementById("labSpeakIntro").onclick=()=>speak(data.subtitle);
-    document.getElementById("chantPlay").onclick=()=>speak(data.rhyme.replace(/\n/g," "));
-    buildForms(data.forms);
-    buildMatch(data.game);
-    buildLetters(data.words);
-  }
-
-  function buildForms(forms){
-    const el=document.getElementById("formWheel");
-    el.innerHTML=forms.map((f,i)=>`
-      <button class="form-node" type="button" data-say="${f[2]}">
-        <span class="form-person">${f[0]}</span><strong>${f[1]}</strong><span class="form-example">${f[2]}</span>
-      </button>`).join("");
-    el.querySelectorAll(".form-node").forEach(b=>b.onclick=()=>{
-      el.querySelectorAll(".form-node").forEach(x=>x.classList.remove("selected"));
-      b.classList.add("selected"); speak(b.dataset.say);
-    });
-  }
-
-  function buildMatch(pairs){
-    const el=document.getElementById("matchBoard");
-    const people=pairs.map((p,i)=>({id:i,text:p[0]}));
-    const forms=pairs.map((p,i)=>({id:i,text:p[1]})).sort(()=>Math.random()-.5);
-    el.innerHTML=`
-      <div class="match-column" id="matchPeople">${people.map(p=>`<button class="match-chip person-chip" data-id="${p.id}" type="button">${p.text}</button>`).join("")}</div>
-      <div class="match-arrows">↔</div>
-      <div class="match-column" id="matchForms">${forms.map(f=>`<button class="match-chip form-chip" draggable="true" data-id="${f.id}" type="button">${f.text}</button>`).join("")}</div>
-      <div class="match-score" id="matchScore">0 / ${pairs.length}</div>`;
-    let selected=null,score=0;
-    el.querySelectorAll(".person-chip").forEach(b=>b.onclick=()=>{selected=b.dataset.id;el.querySelectorAll(".person-chip").forEach(x=>x.classList.remove("picked"));b.classList.add("picked");});
-    el.querySelectorAll(".form-chip").forEach(b=>{
-      b.addEventListener("click",()=>{
-        if(selected===null)return;
-        const ok=selected===b.dataset.id;
-        if(ok){score++;b.classList.add("match-ok");const p=el.querySelector(`.person-chip[data-id="${selected}"]`);p.classList.add("match-ok");p.disabled=true;b.disabled=true;speak(b.textContent);window.__questBonus?.(5);}
-        else{b.classList.add("match-no");setTimeout(()=>b.classList.remove("match-no"),450);speak("Try again");}
-        document.getElementById("matchScore").textContent=`${score} / ${pairs.length}`;
-      });
-    });
-  }
-
-  function buildLetters(words){
-    const el=document.getElementById("letterGame");
-    let index=0,score=0,typed="";
-    const draw=()=>{
-      if(index>=words.length){
-        el.innerHTML=`<div class="letter-finished">🏆 Отлично! Ты собрала все слова!<br><b>+${score} ⭐</b></div>`;
-        return;
-      }
-      const target=words[index], letters=[...target].sort(()=>Math.random()-.5);
-      typed="";
-      el.innerHTML=`
-        <div class="target-word">Собери: <b>${target.replace(/./g,"_ ")}</b></div>
-        <div class="letter-slot" id="letterSlot">Нажимай буквы по порядку</div>
-        <div class="letter-bank">${letters.map((l,i)=>`<button class="letter-key" data-letter="${l}" data-i="${i}" type="button">${l}</button>`).join("")}</div>
-        <button class="secondary-button small-button" id="letterReset" type="button">↺ Заново</button>
-        <div class="feedback info" id="letterFeedback">Слово ${index+1} из ${words.length}</div>`;
-      const update=()=>document.getElementById("letterSlot").textContent=typed||"Нажимай буквы по порядку";
-      el.querySelectorAll(".letter-key").forEach(b=>b.onclick=()=>{
-        const want=target[typed.length];
-        if(b.dataset.letter===want){
-          typed+=b.dataset.letter;b.disabled=true;score++;window.__questBonus?.(3);update();
-          if(typed===target){speak(target);setTimeout(()=>{index++;draw();},500);}
-        }else{
-          const f=document.getElementById("letterFeedback");f.textContent="Почти! Посмотри на следующую букву 🔎";f.className="feedback error";speak(b.dataset.letter);
-        }
-      });
-      document.getElementById("letterReset").onclick=draw;
-    };
-    draw();
-  }
+const IMG="https://yuliaishtar-hub.github.io/inglish-adventure/", LILI=IMG+"Lili.jpg";
+const T={
+tobe:{title:"TO BE · Волшебный хамелеон",sub:"AM, IS, ARE — маленькие помощники Лили.",memory:"AM только с I. IS — с одним героем. ARE — с YOU, WE, THEY.",forms:[["I","AM","I am happy.","Я счастлива."],["YOU","ARE","You are happy.","Ты счастлив."],["HE","IS","He is happy.","Он счастлив."],["SHE","IS","She is happy.","Она счастлива."],["IT","IS","It is cute.","Оно милое."],["WE","ARE","We are happy.","Мы счастливы."],["THEY","ARE","They are happy.","Они счастливы."]],pairs:[["I","AM"],["YOU","ARE"],["HE","IS"],["SHE","IS"],["IT","IS"],["WE","ARE"],["THEY","ARE"]],words:["AM","IS","ARE","HAPPY","SCHOOL"],visual:["👧","🙂","👦","👧","🦄","👨‍👩‍👧"],quiz:[["I ___ happy.","AM",["AM","IS","ARE"]],["She ___ nice.","IS",["AM","IS","ARE"]],["They ___ friends.","ARE",["AM","IS","ARE"]],["We ___ at school.","ARE",["AM","IS","ARE"]]]},
+todo:{title:"TO DO · Детектив вопросов",sub:"DO и DOES помогают задавать вопросы.",memory:"DO дружит с I, YOU, WE, THEY. DOES — с HE, SHE, IT.",forms:[["I","DO","Do I play?","Я играю?"],["YOU","DO","Do you play?","Ты играешь?"],["WE","DO","Do we play?","Мы играем?"],["THEY","DO","Do they play?","Они играют?"],["HE","DOES","Does he play?","Он играет?"],["SHE","DOES","Does she play?","Она играет?"],["IT","DOES","Does it play?","Оно играет?"]],pairs:[["I","DO"],["YOU","DO"],["WE","DO"],["THEY","DO"],["HE","DOES"],["SHE","DOES"],["IT","DOES"]],words:["DO","DOES","PLAY","LIKE"],visual:["🕵️","👧","👨","👩","🐱","👨‍👩‍👧"],quiz:[["___ you like cats?","DO",["DO","DOES","IS"]],["___ he play football?","DOES",["DO","DOES","ARE"]],["___ they like pizza?","DO",["DO","DOES","AM"]],["___ she read?","DOES",["DO","DOES","ARE"]]]},
+have:{title:"HAVE / HAS · Сундучок сокровищ",sub:"HAVE и HAS говорят, что у кого-то что-то есть.",memory:"HAVE — I, YOU, WE, THEY. HAS — HE, SHE, IT.",forms:[["I","HAVE","I have a book.","У меня есть книга."],["YOU","HAVE","You have a bag.","У тебя есть сумка."],["WE","HAVE","We have a cat.","У нас есть кот."],["THEY","HAVE","They have toys.","У них есть игрушки."],["HE","HAS","He has a bike.","У него есть велосипед."],["SHE","HAS","She has a doll.","У неё есть кукла."],["IT","HAS","It has four legs.","У него четыре ноги."]],pairs:[["I","HAVE"],["YOU","HAVE"],["WE","HAVE"],["THEY","HAVE"],["HE","HAS"],["SHE","HAS"],["IT","HAS"]],words:["HAVE","HAS","BOOK","BAG"],visual:["🎁","📚","🐱","🧸","🚲","🎎"],quiz:[["I ___ a pencil.","HAVE",["HAVE","HAS","GOT"]],["He ___ a bike.","HAS",["HAVE","HAS","GOT"]],["They ___ a dog.","HAVE",["HAVE","HAS","IS"]],["She ___ a book.","HAS",["HAVE","HAS","ARE"]]]},
+has:{title:"HAVE GOT / HAS GOT · Магический рюкзак",sub:"HAVE GOT и HAS GOT говорят, что у кого-то что-то есть.",memory:"HAVE GOT — I, YOU, WE, THEY. HAS GOT — HE, SHE, IT.",forms:[["I","HAVE GOT","I have got a cat.","У меня есть кот."],["YOU","HAVE GOT","You have got a bag.","У тебя есть сумка."],["WE","HAVE GOT","We have got a house.","У нас есть дом."],["THEY","HAVE GOT","They have got toys.","У них есть игрушки."],["HE","HAS GOT","He has got a ball.","У него есть мяч."],["SHE","HAS GOT","She has got a doll.","У неё есть кукла."],["IT","HAS GOT","It has got four legs.","У него четыре ноги."]],pairs:[["I","HAVE GOT"],["YOU","HAVE GOT"],["WE","HAVE GOT"],["THEY","HAVE GOT"],["HE","HAS GOT"],["SHE","HAS GOT"],["IT","HAS GOT"]],words:["HAVE","HAS","GOT","CAT"],visual:["🎒","👜","🏠","🧸","⚽","🎎"],quiz:[["I ___ got a cat.","HAVE",["HAVE","HAS","IS"]],["He ___ got a bike.","HAS",["HAVE","HAS","ARE"]],["We ___ got toys.","HAVE",["HAVE","HAS","DOES"]],["She ___ got a doll.","HAS",["HAVE","HAS","AM"]]]},
+plural:{title:"PLURAL · Город множества",sub:"Один предмет превращаем в несколько.",memory:"Чаще всего добавляем S. После s, x, ch, sh часто ES. baby → babies. child → children.",forms:[["1","CAT","2 CATS","добавили S"],["1","BOOK","2 BOOKS","добавили S"],["1","BOX","2 BOXES","добавили ES"],["1","BUS","2 BUSES","добавили ES"],["1","BABY","2 BABIES","Y → IES"],["1","CHILD","CHILDREN","особенное слово"]],pairs:[["cat","cats"],["book","books"],["box","boxes"],["bus","buses"],["baby","babies"],["child","children"]],words:["CATS","BOXES","BABIES","CHILDREN"],visual:["🐱","📚","📦","🚌","👶","👧"],quiz:[["one cat → two ___","CATS",["CATS","CATES","CAT"]],["one box → two ___","BOXES",["BOXS","BOXES","BOX"]],["one baby → two ___","BABIES",["BABYS","BABIES","BABYES"]],["one child → two ___","CHILDREN",["CHILDS","CHILDREN","CHILDES"]]]},
+size:{title:"BIG · BIGGER · BIGGEST",sub:"Сравниваем три размера.",memory:"Три коробки: большая, ещё больше и самая большая.",forms:[["1","BIG","BIG","большой"],["2","BIG","BIGGER","больше"],["3","BIG","BIGGEST","самый большой"],["1","SMALL","SMALL","маленький"],["2","SMALL","SMALLER","меньше"],["3","SMALL","SMALLEST","самый маленький"]],pairs:[["big","bigger"],["bigger","biggest"],["small","smaller"],["smaller","smallest"]],words:["BIG","BIGGER","BIGGEST","SMALL"],visual:["📦","📦","📦","🌱","🌱","🌱"],quiz:[["A big ball. A ___ ball.","BIGGER",["BIGGER","BIG","BIGGEST"]],["The ___ ball of all.","BIGGEST",["BIG","BIGGER","BIGGEST"]],["A ___ cat.","SMALL",["SMALL","SMALLER","SMALLEST"]],["The ___ cat of all.","SMALLEST",["SMALL","SMALLER","SMALLEST"]]]}
+};
+const E=s=>String(s).replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));
+function speak(t){if(!("speechSynthesis"in window))return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang="en-US";u.rate=.82;u.pitch=1.08;speechSynthesis.speak(u)}
+function bonus(n){window.__questBonus?.(n)}
+function openTopicLab(key){const d=T[key]||T.tobe,sc=document.getElementById("topicLabScreen");if(!sc)return;document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));sc.classList.add("active");render(d,key);window.scrollTo(0,0)}
+window.openTopicLab=openTopicLab;
+window.closeTopicLab=()=>{document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));document.getElementById("homeScreen")?.classList.add("active");window.scrollTo(0,0)};
+function render(d,key){
+const root=document.getElementById("topicLabContent");
+root.innerHTML='<div class="topic-lab-hero theory-hero"><div class="lili-theory"><img src="'+LILI+'" alt="Lili"><button id="heroSpeak" class="round-button" type="button">🔊</button></div><div class="theory-hero-copy"><div class="eyebrow">ЛИЛИ ОБЪЯСНЯЕТ · '+key.toUpperCase()+'</div><h1>'+d.title+'</h1><p>'+d.sub+'</p><div class="memory-ribbon">💡 <b>Секрет памяти:</b> '+d.memory+'</div></div></div>'+
+'<section class="lab-section"><div class="lab-section-title"><span>1</span><div><b>Посмотри и нажимай</b><small>Картинка оживает и произносит пример</small></div></div><div class="picture-theory" id="pictureTheory"></div></section>'+
+'<section class="lab-section"><div class="lab-section-title"><span>2</span><div><b>Правило как картинка</b><small>Нажми на карточку — Лили повторит правило</small></div></div><div class="form-wheel" id="formWheel"></div></section>'+
+'<section class="lab-section magic-section"><div class="lab-section-title"><span>3</span><div><b>Магическая машина</b><small>Выбери героя и увидишь нужного помощника</small></div></div><div class="magic-machine" id="magicMachine"></div></section>'+
+'<section class="lab-section"><div class="lab-section-title"><span>4</span><div><b>Проверь себя</b><small>Много коротких примеров</small></div></div><div class="quiz-board" id="quizBoard"></div></section>'+
+'<section class="lab-section"><div class="lab-section-title"><span>5</span><div><b>Собери правильные пары</b><small>Соедини героя и его помощника</small></div></div><div class="match-board" id="matchBoard"></div></section>'+
+'<section class="lab-section"><div class="lab-section-title"><span>6</span><div><b>Собери слово</b><small>Нажимай буквы по порядку и получай ⭐</small></div></div><div class="letter-game" id="letterGame"></div></section>'+
+'<section class="lab-section"><div class="repeat-card"><img src="'+LILI+'" alt="Lili"><div><b>Финальный повтор</b><p>Скажи пример вслух вместе с Лили.</p><button class="main-button" id="repeatButton" type="button">🎤 Повторить</button></div></div></section>';
+document.getElementById("heroSpeak").onclick=()=>speak(d.sub+" "+d.memory);
+document.getElementById("repeatButton").onclick=()=>speak(d.forms[0][2]||d.forms[0][1]);
+buildPictures(d);buildForms(d.forms);buildMachine(d);buildQuiz(d.quiz);buildMatch(d.pairs);buildLetters(d.words)
+}
+function buildPictures(d){
+const el=document.getElementById("pictureTheory");el.innerHTML=d.forms.slice(0,6).map((f,i)=>'<button class="picture-card" type="button" data-say="'+E(f[2]||f[1])+'"><div class="picture-art">'+d.visual[i]+'</div><div class="picture-label">'+E(f[0])+'</div><strong>'+E(f[1])+'</strong><small>'+E(f[2]||"")+'</small><em>'+E(f[3]||"")+'</em></button>').join("");
+el.querySelectorAll(".picture-card").forEach(b=>b.onclick=()=>{b.classList.add("pop");setTimeout(()=>b.classList.remove("pop"),350);speak(b.dataset.say)})
+}
+function buildForms(forms){
+const el=document.getElementById("formWheel");el.innerHTML=forms.map(f=>'<button class="form-node theory-node" type="button" data-say="'+E(f[2]||f[1])+'"><span class="form-person">'+E(f[0])+'</span><strong>'+E(f[1])+'</strong><span class="form-example">'+E(f[2]||"")+'</span><small>'+E(f[3]||"")+'</small></button>').join("");
+el.querySelectorAll(".form-node").forEach(b=>b.onclick=()=>{el.querySelectorAll(".form-node").forEach(x=>x.classList.remove("selected"));b.classList.add("selected");speak(b.dataset.say)})
+}
+function buildMachine(d){
+const el=document.getElementById("magicMachine");el.innerHTML='<div class="machine-hero">✨ <span id="machineResult">Выбери героя</span> ✨</div><div class="machine-choices">'+d.pairs.map((p,i)=>'<button type="button" class="machine-person" data-i="'+i+'">'+E(p[0])+'</button>').join("")+'</div><div class="machine-answer" id="machineAnswer">👇 Кто войдёт в машину первым?</div>';
+el.querySelectorAll(".machine-person").forEach((b,i)=>b.onclick=()=>{const p=d.pairs[i];el.querySelectorAll(".machine-person").forEach(x=>x.classList.remove("active"));b.classList.add("active");document.getElementById("machineResult").textContent=p[0]+" → "+p[1];document.getElementById("machineAnswer").textContent=p[0]+" выбирает "+p[1];speak(p[0]+" "+p[1]);bonus(2)})
+}
+function buildQuiz(qs){
+const el=document.getElementById("quizBoard");let i=0,ok=0;
+function draw(){if(i>=qs.length){el.innerHTML='<div class="quiz-finished">🏆 Готово! Правильных ответов: <b>'+ok+'/'+qs.length+'</b><br><span>Правило повторилось несколько раз — теперь мозгу легче его запомнить.</span></div>';return}
+const q=qs[i];el.innerHTML='<div class="quiz-counter">Пример '+(i+1)+' из '+qs.length+'</div><div class="quiz-sentence">'+E(q[0])+'</div><div class="quiz-options">'+q[2].map(a=>'<button type="button" data-answer="'+E(a)+'">'+E(a)+'</button>').join("")+'</div><div class="feedback info" id="quizFeedback">Выбери ответ</div>';
+el.querySelectorAll("button").forEach(b=>b.onclick=()=>{const good=b.dataset.answer===q[1];el.querySelectorAll("button").forEach(x=>x.disabled=true);b.classList.add(good?"quiz-ok":"quiz-no");const f=document.getElementById("quizFeedback");if(good){ok++;bonus(5);f.textContent="Верно! ⭐";f.className="feedback success";speak("Great!");setTimeout(()=>{i++;draw()},650)}else{f.textContent="Почти! Правильный ответ: "+q[1];f.className="feedback error";speak("Try again");setTimeout(()=>{i++;draw()},900)}})}
+draw()
+}
+function buildMatch(pairs){
+const el=document.getElementById("matchBoard"),people=pairs.map((p,i)=>({id:i,text:p[0]})),forms=pairs.map((p,i)=>({id:i,text:p[1]})).sort(()=>Math.random()-.5);
+el.innerHTML='<div class="match-column" id="matchPeople">'+people.map(p=>'<button class="match-chip person-chip" data-id="'+p.id+'" type="button">'+E(p.text)+'</button>').join("")+'</div><div class="match-arrows">↔</div><div class="match-column" id="matchForms">'+forms.map(f=>'<button class="match-chip form-chip" data-id="'+f.id+'" type="button">'+E(f.text)+'</button>').join("")+'</div><div class="match-score" id="matchScore">0 / '+pairs.length+'</div>';
+let selected=null,score=0;el.querySelectorAll(".person-chip").forEach(b=>b.onclick=()=>{selected=b.dataset.id;el.querySelectorAll(".person-chip").forEach(x=>x.classList.remove("picked"));b.classList.add("picked");speak(b.textContent)});
+el.querySelectorAll(".form-chip").forEach(b=>b.onclick=()=>{if(selected===null)return;const good=selected===b.dataset.id;if(good){score++;b.classList.add("match-ok");const p=el.querySelector('.person-chip[data-id="'+selected+'"]');p.classList.add("match-ok");p.disabled=true;b.disabled=true;bonus(5);speak(b.textContent)}else{b.classList.add("match-no");setTimeout(()=>b.classList.remove("match-no"),400);speak("Try again")}document.getElementById("matchScore").textContent=score+" / "+pairs.length})
+}
+function buildLetters(words){
+const el=document.getElementById("letterGame");let n=0,score=0,typed="";
+function draw(){if(n>=words.length){el.innerHTML='<div class="letter-finished">🎉 Все слова собраны!<br><b>+'+score+' ⭐</b></div>';return}const target=words[n],letters=[...target].sort(()=>Math.random()-.5);typed="";
+el.innerHTML='<div class="target-word">Собери: <b>'+target.replace(/./g,"_ ")+'</b></div><div class="letter-slot" id="letterSlot">Нажимай буквы по порядку</div><div class="letter-bank">'+letters.map((l,i)=>'<button class="letter-key" data-letter="'+l+'" data-i="'+i+'" type="button">'+l+'</button>').join("")+'</div><button class="secondary-button small-button" id="letterReset" type="button">↺ Заново</button><div class="feedback info" id="letterFeedback">Слово '+(n+1)+' из '+words.length+'</div>';
+el.querySelectorAll(".letter-key").forEach(b=>b.onclick=()=>{const want=target[typed.length];if(b.dataset.letter===want){typed+=b.dataset.letter;b.disabled=true;score++;bonus(3);document.getElementById("letterSlot").textContent=typed;if(typed===target){speak(target);setTimeout(()=>{n++;draw()},500)}}else{document.getElementById("letterFeedback").textContent="Посмотри на следующую букву 🔎";speak("Try again")}});document.getElementById("letterReset").onclick=draw}
+draw()
+}
 })();
