@@ -12,8 +12,10 @@ const zones = [
   {key:"daybyday", icon:"⏰", title:"Module 8 · Day by Day!", sub:"Распорядок дня, время и привычные действия"}
 ];
 
-const q = (question, image, options, correctIndex, tip="") => ({type:"choice", question, image, options, correctIndex, tip});
-const build = (question, words, answer, tip="") => ({type:"build", question, words, answer, tip});
+const QUESTION_RU = {"What colour is it?":"Какого это цвета?","How many stars can you see?":"Сколько звёзд ты видишь?","Choose a school item.":"Выбери школьную принадлежность.","What is it?":"Что это?","How many books?":"Сколько книг?","Who is she?":"Кто она?","Who is he?":"Кто он?","Who are they?":"Кто они?","What do you like?":"Что тебе нравится?","Choose a drink.":"Выбери напиток.","Choose the correct question.":"Выбери правильный вопрос.","Choose the correct word.":"Выбери правильное слово.","Where is the ball?":"Где мяч?","Choose the correct phrase.":"Выбери правильную фразу.","Choose a room.":"Выбери комнату.","Choose the plural.":"Выбери форму множественного числа.","What can it do?":"Что оно умеет делать?","Choose the body part.":"Выбери часть тела.","Choose the animal.":"Выбери животное.","How many?":"Сколько?","What room is it?":"Что это за комната?","Where is the lamp?":"Где лампа?","Choose the correct plural.":"Выбери правильную форму множественного числа.","What is she doing?":"Что она делает?","What are they doing?":"Что они делают?","Choose the action.":"Выбери действие.","Choose the correct form.":"Выбери правильную форму.","What time is it?":"Который час?","Choose a daily action.":"Выбери действие из распорядка дня.","Choose the correct sentence.":"Выбери правильное предложение.","When do you do it?":"Когда ты это делаешь?"};
+const questionRu = question => QUESTION_RU[question] || "";
+const q = (question, image, options, correctIndex, tip="") => ({type:"choice", question, questionRu:questionRu(question), image, options, correctIndex, tip});
+const build = (question, words, answer, tip="") => ({type:"build", question, questionRu:questionRu(question), words, answer, tip});
 
 const levels = {
   starter:{name:"🌈 Starter Unit · Welcome back!", questions:[
@@ -147,7 +149,7 @@ function visual(image){return typeof image==="string"&&image.startsWith("http")?
 function renderChoice(item){
   answered=false;
   const box=document.getElementById("lessonContent");
-  box.innerHTML=`${visual(item.image)}<div class="lesson-kind">СЛОВО · ФРАЗА · ПОНИМАНИЕ</div><div class="question">${item.question}</div><button id="listenQuestion" class="listen-button" type="button">🔊 Слушать</button><div id="answers" class="answer-grid"></div><div id="feedback" class="feedback"></div><div class="lesson-actions"><button id="speakButton" class="speak-button" type="button" hidden>🎤 Повторить</button><button id="nextButton" class="next-button" type="button" hidden>Дальше ➜</button></div>`;
+  box.innerHTML=`${visual(item.image)}<div class="lesson-kind">СЛОВО · ФРАЗА · ПОНИМАНИЕ</div><div class="question question-with-translation" tabindex="0" data-translation="${item.questionRu||""}">${item.question}</div><button id="listenQuestion" class="listen-button" type="button">🔊 Слушать</button><div id="answers" class="answer-grid"></div><div id="feedback" class="feedback"></div><div class="lesson-actions"><button id="speakButton" class="speak-button" type="button" hidden>🎤 Повторить</button><button id="nextButton" class="next-button" type="button" hidden>Дальше ➜</button></div>`;
   document.getElementById("listenQuestion").onclick=()=>speak(item.question);
   document.getElementById("speakButton").onclick=()=>listenAnswer(item.options[item.correctIndex]);
   document.getElementById("nextButton").onclick=nextItem;
@@ -157,7 +159,7 @@ function renderChoice(item){
 function renderBuilder(item){
   answered=false; let picked=[];
   const box=document.getElementById("lessonContent");
-  box.innerHTML=`<div class="builder-hero">🧩</div><div class="lesson-kind">СОБЕРИ ФРАЗУ</div><div class="question">${item.question}</div><button id="buildListen" class="listen-button" type="button">🔊 Послушать ответ</button><div class="sentence-slot" id="sentenceSlot">Нажимай слова по порядку</div><div class="word-bank" id="wordBank"></div><div id="feedback" class="feedback"></div><div class="lesson-actions"><button id="resetSentence" class="secondary-button small-button" type="button">↺ Заново</button><button id="checkSentence" class="next-button" type="button">Проверить ✓</button><button id="nextButton" class="next-button" type="button" hidden>Дальше ➜</button></div>`;
+  box.innerHTML=`<div class="builder-hero">🧩</div><div class="lesson-kind">СОБЕРИ ФРАЗУ</div><div class="question question-with-translation" tabindex="0" data-translation="${item.questionRu||""}">${item.question}</div><button id="buildListen" class="listen-button" type="button">🔊 Послушать ответ</button><div class="sentence-slot" id="sentenceSlot">Нажимай слова по порядку</div><div class="word-bank" id="wordBank"></div><div id="feedback" class="feedback"></div><div class="lesson-actions"><button id="resetSentence" class="secondary-button small-button" type="button">↺ Заново</button><button id="checkSentence" class="next-button" type="button">Проверить ✓</button><button id="nextButton" class="next-button" type="button" hidden>Дальше ➜</button></div>`;
   const bank=document.getElementById("wordBank");
   [...item.words].sort(()=>Math.random()-0.5).forEach(word=>{const b=document.createElement("button");b.type="button";b.className="word-tile";b.textContent=word;b.onclick=()=>{picked.push(word);b.disabled=true;updateSlot();};bank.appendChild(b);});
   function updateSlot(){document.getElementById("sentenceSlot").textContent=picked.join(" ")||"Нажимай слова по порядку";}
