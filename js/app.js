@@ -212,9 +212,12 @@ function setupDashboard(){
   document.querySelectorAll(".tool-button").forEach(b=>b.addEventListener("click",()=>{
     const tool=b.dataset.tool;
     if(tool==="wordbook" && window.openWordbook){window.openWordbook();return;}
-    if(tool==="size"){window.openTopicLab?.("size");return;}
-    const map={tobe:"tobe",todo:"todo",have:"have",has:"has",singular:"plural",plural:"plural",size:"size"};
-    startLevel(map[tool]||"starter");
+    if(["tobe","todo","have","has","singular","plural","size"].includes(tool)){
+      const topic = tool==="singular" ? "plural" : tool;
+      if(window.openTopicLab){ window.openTopicLab(topic); }
+      return;
+    }
+    startLevel(tool||"starter");
   }));
 }
 function startSizeGame(){
@@ -238,6 +241,7 @@ function init(){
   document.getElementById("mapHome")?.addEventListener("click",goHome);
   document.getElementById("lessonBack")?.addEventListener("click",showMap);
   document.getElementById("rewardMap")?.addEventListener("click",showMap);
-  document.getElementById("rewardHome")?.addEventListener("click",goHome);\n  document.getElementById("topicLabBack")?.addEventListener("click",showHomeFromLab);
+  document.getElementById("rewardHome")?.addEventListener("click",goHome);
+  document.getElementById("topicLabBack")?.addEventListener("click",showHomeFromLab);
 }
 document.addEventListener("DOMContentLoaded",init);
