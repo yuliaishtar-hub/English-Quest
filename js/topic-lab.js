@@ -99,6 +99,11 @@
     render(data,key);
   }
   window.openTopicLab=openTopicLab;
+  window.closeTopicLab=()=>{
+    document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+    document.getElementById("homeScreen")?.classList.add("active");
+    window.scrollTo(0,0);
+  };
 
   function render(data,key){
     const root=document.getElementById("topicLabContent");
