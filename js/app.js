@@ -99,6 +99,74 @@ const levels = {
   ]}
 };
 
+
+const CURRICULUM_EXTRA = {
+starter:[
+ q("Choose the colour.","🔴",["red","green","blue"],0,"red = красный"),
+ q("How many?","1️⃣2️⃣3️⃣4️⃣",["Four.","Fourteen.","Forty."],0,"four = четыре"),
+ build("Собери: «Это моя книга».",["my","book.","It’s"],"It’s my book.","my = мой / моя"),
+ q("Choose the correct classroom word.","📏",["ruler","pizza","grandpa"],0,"ruler = линейка"),
+ build("Собери команду.",["Listen","please."],"Listen please.","Listen = слушай")
+],
+school:[
+ q("Choose the school subject.","🎵",["music","kitchen","family"],0,"music = музыка"),
+ q("Choose the number.","1️⃣6️⃣",["sixteen","sixty","six"],0,"sixteen = шестнадцать"),
+ q("What is it?","📏",["It’s a ruler.","It’s a bag.","It’s a pen."],0,"ruler = линейка"),
+ build("Собери: «Встань».",["up","Stand"],"Stand up","Stand up = встань"),
+ q("Choose the correct article.","◻️",["an eraser","a eraser","an ruler"],0,"an eraser")
+],
+family:[
+ q("Who is she?","👧",["She’s my sister.","He’s my sister.","They’re my sister."],0,"she = она"),
+ q("Who is he?","👦",["He’s my brother.","She’s my brother.","They’re my brother."],0,"he = он"),
+ q("Choose the plural.","👧👧",["sisters","sister","sisteres"],0,"sister → sisters"),
+ build("Собери: «У неё есть сестра».",["has","a","sister.","She"],"She has a sister.","She + has"),
+ q("Choose the possessive word.","💜",["my","milk","run"],0,"my = мой / моя")
+],
+likes:[
+ q("Choose the food.","🍎",["apples","chair","ruler"],0,"apples = яблоки"),
+ q("Choose the drink.","🧃",["juice","bed","ball"],0,"juice = сок"),
+ build("Собери: «Я люблю пиццу».",["I","pizza.","like"],"I like pizza.","I like = мне нравится"),
+ q("Choose the negative sentence.","🚫",["I don’t like milk.","I doesn’t like milk.","I am not like milk."],0,"I don’t like..."),
+ q("Choose the question.","❓",["Do you like cake?","Does you like cake?","Are you like cake?"],0,"Do you...?")
+],
+toys:[
+ q("Choose the toy.","🧸",["teddy bear","kitchen","teacher"],0,"teddy bear = плюшевый мишка"),
+ q("Where is the ball?","⚽⬆️",["It’s on the chair.","It’s a chair.","It’s blue."],0,"on = на"),
+ build("Собери: «У неё есть кукла».",["She","has","got","a","doll."],"She has got a doll.","has got = у неё есть"),
+ q("Choose the room.","🛏️",["bedroom","classroom","garden"],0,"bedroom = спальня"),
+ q("Choose the plural.","🤖🤖",["robots","robot","roboties"],0,"robot → robots")
+],
+animals:[
+ q("Choose the animal.","🐸",["frog","sofa","school"],0,"frog = лягушка"),
+ q("What can a bird do?","🐦",["It can fly.","It can swim in a chair.","It is a table."],0,"can fly = умеет летать"),
+ build("Собери: «Рыба не умеет ходить».",["A","fish","can’t","walk."],"A fish can’t walk.","can’t + глагол"),
+ q("Choose the body part.","👁️",["eye","kitchen","park"],0,"eye = глаз"),
+ q("Choose the correct plural.","🐾🐾",["paws","paw","pawses"],0,"paw → paws")
+],
+home:[
+ q("Choose a room.","🛁",["bathroom","bedroom","garden"],0,"bathroom = ванная"),
+ q("Where is the cat?","🐱🪑",["It’s on the chair.","It’s under Monday.","It’s a kitchen."],0,"on = на"),
+ q("Choose the correct word.","📦⬇️",["under","music","grandma"],0,"under = под"),
+ build("Собери: «Мяч в коробке».",["The","ball","is","in","the","box."],"The ball is in the box.","in = в"),
+ q("Choose the plural.","📦📦",["boxes","box","boxs"],0,"box → boxes")
+],
+dayoff:[
+ q("What is he doing?","🚲",["He’s riding a bike.","He’s a bedroom.","He ride yesterday."],0,"He’s riding = он катается"),
+ build("Собери: «Она рисует».",["She","is","drawing."],"She is drawing.","is + verb-ing"),
+ q("Choose the action.","🎨",["drawing","kitchen","grandpa"],0,"drawing = рисование"),
+ q("What are they doing?","📺",["They’re watching TV.","They’re a TV.","They watch yesterday."],0,"They’re = They are"),
+ build("Собери: «Мы играем в футбол».",["We’re","playing","football."],"We’re playing football.","We’re = We are")
+],
+daybyday:[
+ q("Choose the time.","🕘",["nine o’clock","nine apples","nine school"],0,"nine o’clock = девять часов"),
+ build("Собери: «Я чищу зубы».",["I","brush","my","teeth."],"I brush my teeth.","brush my teeth = чистить зубы"),
+ q("Choose the morning action.","🌅",["get up","go to bed","sleep at night"],0,"get up = вставать"),
+ build("Собери: «Я ложусь спать в девять».",["I","go","to","bed","at","nine."],"I go to bed at nine.","go to bed = ложиться спать"),
+ q("Choose the correct routine.","📅",["I go to school every day.","I school go every day.","I am go school."],0,"every day = каждый день")
+]
+};
+Object.keys(CURRICULUM_EXTRA).forEach(key=>levels[key]?.questions.push(...CURRICULUM_EXTRA[key]));
+
 let state = loadState();
 let currentKey = "starter";
 let currentIndex = 0;
